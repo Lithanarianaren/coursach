@@ -30,3 +30,16 @@ class HasInternalRelations(ABC):
 
         """
         raise NotImplementedError
+
+    @staticmethod
+    @abstractmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        """
+        Возвращает классы объектов, которые можно положить в таблицу.
+
+        Пример:
+
+        Объект класса "Магазин" вернёт классы "работник", "товар", несколько раз "транзакция".
+
+        """
+        raise NotImplementedError

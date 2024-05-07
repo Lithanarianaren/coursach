@@ -20,6 +20,10 @@ class Item(Relationable):
 
 
 class Transaction(Relationable, HasInternalRelations):
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Item]
+
     def get_relation_object(self) -> list[str]:
         return [self.desc, str(self.cost)]
 
@@ -99,6 +103,10 @@ class Warehouse(Relationable,HasInternalRelations):
     @staticmethod
     def get_relation_names() -> list[str]:
         return ["Кадры","Опись","Дневник","Текущие транзакции"]
+
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Worker,Item,Transaction,Transaction]
 
     def get_relation_data(self) -> list[list[Relationable]]:
         return [self.workers,self.stored_items,self.diary,self.active_trans]
