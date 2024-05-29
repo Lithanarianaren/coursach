@@ -19,7 +19,7 @@ class Item(Relationable):
         return [self.name, str(self.cost), str(self.quantity)]
 
 
-class Transaction(Relationable, HasInternalRelations):
+class Transaction(HasInternalRelations):
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
         return [Item]
@@ -90,7 +90,7 @@ class Transaction(Relationable, HasInternalRelations):
         return "description={}, cost={}, items={}".format(self.desc, self.cost, self.items)
 
 
-class Warehouse(Relationable,HasInternalRelations):
+class Warehouse(HasInternalRelations):
     @staticmethod
     def get_relation_attributes() -> list[str]:
         return ["№","Адрес"]

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from gui.relation.Relationable import Relationable
 
 
-class HasInternalRelations(ABC):
+class HasInternalRelations(Relationable):
 
     @staticmethod
     @abstractmethod
