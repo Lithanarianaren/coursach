@@ -1,13 +1,8 @@
-from tkinter import Tk, ttk
-
-from classes import *
 from gui.event.Event import Event
 from gui.event.Listener import Listener
-from gui.form.Form import Form
-from gui.form.FormElement import *
 from gui.layout.WindowLayout import WindowLayout
-from gui.widgets.ItemFrame import ItemFrame
 from gui.relation.HasInternalRelations import HasInternalRelations
+from gui.widgets.ItemFrame import ItemFrame
 
 
 class Window(Listener, WindowLayout):
@@ -28,20 +23,9 @@ class Window(Listener, WindowLayout):
             self.reassign(self.__backstack.pop())
 
     def forward(self, item: HasInternalRelations):
-        self.bring_form()
         self.__backstack.append(self.__obj)
         self.reset()
         self.reassign(item)
-
-    def bring_form(self):
-        Form() \
-            .add(TextFormElement(
-            "Sampleblblblbllblblbllblbllbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            Form.int_constraint, "120")) \
-            .add(BoolFormElement("Bool")) \
-            .add(BoolFormElement("Bool2", True)) \
-            .add(SelectionFormElement("Selection", ['Selq', 'Selw', 'Sele', 'Selr'],1)) \
-            .launch()
 
     def receive_event(self, event: Event):
         if event.name == 'item_clicked':
