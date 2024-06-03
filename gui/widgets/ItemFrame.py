@@ -2,7 +2,7 @@ from tkinter import ttk
 
 from gui.event.Event import Event
 from gui.event.Listener import Listener
-from gui.relation.HasInternalRelations import HasInternalRelations
+from gui.relation.Relationable import HasInternalRelations
 from gui.widgets.Relation import Relation
 
 
@@ -13,6 +13,8 @@ class ItemFrame(Listener, ttk.Frame):
         self.lookup_button = None
 
     def setup(self, obj_type, width, data):
+        if isinstance(self.relation,Relation):
+            self.relation.destroy()
         self.relation = Relation(self, obj_type)
         self.relation.add_listener(self)
         self.relation.set_data(data)
@@ -28,3 +30,6 @@ class ItemFrame(Listener, ttk.Frame):
 
     def __del__(self):
         del self.relation
+
+    def update_items(self):
+        pass

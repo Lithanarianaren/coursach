@@ -1,4 +1,4 @@
-from gui.relation.HasInternalRelations import HasInternalRelations
+from gui.relation.Relationable import HasInternalRelations
 from gui.relation.Relationable import Relationable
 
 

@@ -78,7 +78,7 @@ class Form:
         wnd.quit()
         wnd.destroy()
 
-    def launch(self):
+    def launch(self) -> Optional[list]:
 
         window = Tk()
         window.protocol("WM_DELETE_WINDOW", lambda: Form.cancel(window))

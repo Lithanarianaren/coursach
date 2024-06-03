@@ -1,7 +1,9 @@
 from gui.event.Event import Event
 from gui.event.Listener import Listener
+from gui.form.Form import Form
 from gui.layout.WindowLayout import WindowLayout
-from gui.relation.HasInternalRelations import HasInternalRelations
+from gui.relation.Relationable import HasInternalRelations, Deletable
+from gui.relation.Relationable import Addable, Editable
 from gui.widgets.ItemFrame import ItemFrame
 
 
@@ -17,7 +19,7 @@ class Window(Listener, WindowLayout):
         self.setup_tabs()
         self.fill_tabs()
 
-    def back(self, none=None):
+    def back(self):
         if len(self.__backstack):
             self.reset()
             self.reassign(self.__backstack.pop())
@@ -28,9 +30,33 @@ class Window(Listener, WindowLayout):
         self.reassign(item)
 
     def receive_event(self, event: Event):
-        if event.name == 'item_clicked':
+        if event.name == 'internal_relation_query':
             if isinstance(event.data['item'], HasInternalRelations):
                 self.forward(event.data['item'])
+            return
+        if event.name == 'add_query':
+            if isinstance(event.data['class'], type[Addable]):
+                datatype: type[Addable] = event.data['class']
+                form_result = Form(datatype.add_form_blueprint()).launch()
+                if form_result is not None:
+                    datatype.add(self.__obj, form_result)
+                    self.fill_tabs()
+            return
+        if event.name == 'edit_query':
+            if isinstance(event.data['item'], Editable):
+                item: Editable = event.data['item']
+                form_result = Form(item.edit_form_blueprint()).launch()
+                if form_result is not None:
+                    item.edit(form_result)
+                    self.fill_tabs()
+                self.fill_tabs()
+            return
+        if event.name == 'delete_query':
+            if isinstance(event.data['item'], Deletable):
+                item: Deletable = event.data['item']
+                item.delete()
+                self.fill_tabs()
+            return
 
     TABLE_WIDTH = 750
 
@@ -43,8 +69,8 @@ class Window(Listener, WindowLayout):
         self.setup_tabs()
         self.fill_tabs()
 
-        self.backbutton.bind("<Button-1>", self.back)
-        self.bind("<Escape>", self.back)
+        self.backbutton.bind("<Button-1>", lambda e: self.back)
+        self.bind("<Escape>", lambda e: self.back)
 
     def setup_tabs(self):
         for name in self.__obj.get_relation_names():
