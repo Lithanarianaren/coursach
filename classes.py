@@ -1,8 +1,9 @@
 from gui.relation.Relationable import HasInternalRelations
-from gui.relation.Relationable import Relationable
+from gui.relation.Relationable import *
+from gui.form.blueprints import *
 
 
-class Item(Relationable):
+class Item(Addable, Editable, Deletable):
     def __init__(self, name="item", quantity=1, cost=0):
         self.name = name
         self.cost = cost
@@ -15,11 +16,42 @@ class Item(Relationable):
     def get_relation_attributes() -> list[str]:
         return ["Наименование", "Цена", "Количество"]
 
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        form = FormBlueprint()
+        name_input = TextElem("Наименование", str_constraint)
+        quantity_input = TextElem("Количество", unsigned_int_constraint)
+        cost_input = TextElem("Цена", unsigned_int_constraint)
+        form.add(name_input).add(quantity_input).add(cost_input)
+        return form
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        item = Item(*attributes)
+        parent.add_relation(item)
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        form = FormBlueprint()
+        name_input = TextElem("Наименование", str_constraint, self.name)
+        quantity_input = TextElem("Количество", str_constraint, self.quantity)
+        cost_input = TextElem("Цена", unsigned_int_constraint, self.cost)
+        form.add(name_input).add(quantity_input).add(cost_input)
+        return form
+
+    def edit(self, attributes: list):
+        self.name = attributes[0]
+        self.quantity = attributes[1]
+        self.cost = attributes[2]
+
+    def delete(self, parent: HasInternalRelations):
+        parent.del_relation(self)
+
+
     def get_relation_object(self) -> list[str]:
         return [self.name, str(self.cost), str(self.quantity)]
 
 
-class Transaction(HasInternalRelations):
+class Transaction(HasInternalRelations, Addable, Editable):
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
         return [Item]
@@ -37,6 +69,35 @@ class Transaction(HasInternalRelations):
     @staticmethod
     def get_relation_attributes() -> list[str]:
         return ["Описание", "Сумма"]
+
+    def add_relation(self, item):
+        self.add_items([item])
+
+    def del_relation(self, item):
+        self.del_items([item])
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        form = FormBlueprint()
+        # хз как сделать чертеж где можно сколько угодно item-ов добавлять
+        desc_input = TextElem("Описаание транзакции", str_constraint)
+        form.add(desc_input)
+        return form
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        tr = Transaction(None, attributes[0])
+        parent.add_relation(tr)
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        form = FormBlueprint()
+        # хз как сделать чертеж где можно сколько угодно item-ов добавлять
+        desc_input = TextElem("Описаание транзакции", str_constraint, self.desc)
+        form.add(desc_input)
+        return form
+
+    def edit(self, attributes):
+        self.desc = attributes[0]
 
     def __init__(self, items=None, desc='', cost=0):
         if items is None:
@@ -110,6 +171,26 @@ class Warehouse(HasInternalRelations):
 
     def get_relation_data(self) -> list[list[Relationable]]:
         return [self.workers,self.stored_items,self.diary,self.active_trans]
+
+    def add_relation(self, item):
+        res: int = -1
+        if isinstance(item, Item):
+            res = self.add_items([item])
+        elif isinstance(item, Transaction):
+            res = self.add_transaction(item)
+        elif isinstance(item, Worker):
+            res = self.hire(item)
+        return res
+
+    def del_relation(self, item):
+        res: int = -1
+        if isinstance(item, Item):
+            res = self.del_items([item])
+        elif isinstance(item, Transaction):
+            res = self.del_transaction(item)
+        elif isinstance(item, Worker):
+            res = self.fire(item)
+        return res
 
     def __init__(self, id=-1):
         self.id = id
@@ -311,13 +392,46 @@ class Store(Warehouse):
         return 1
 
 
-class Worker(Relationable):
+class Worker(Addable, Editable, Deletable):
     @staticmethod
     def get_relation_attributes() -> list[str]:
         return ["№","Имя","Оклад","Номер телефона"]
 
     def get_relation_object(self) -> list[str]:
         return [str(self.id),self.name,str(self.salary),self.phone]
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        form = FormBlueprint()
+        # блин прописать бы ограничение на уникальный id, но хз как
+        id_input = TextElem("id", unsigned_int_constraint)
+        name_input = TextElem("Имя", str_constraint)
+        salary_input = TextElem("Зарплата", unsigned_int_constraint)
+        phone_input = TextElem("телефонный номер", str_constraint)
+        form.add(id_input).add(name_input).add(salary_input).add(phone_input)
+        return form
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        wrk = Worker(*attributes)
+        parent.add_relation(wrk)
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        form = FormBlueprint()
+        # id неизменяемый, навсякий
+        name_input = TextElem("Имя", str_constraint, self.name)
+        salary_input = TextElem("Зарплата", unsigned_int_constraint, self.salary)
+        phone_input = TextElem("телефонный номер", str_constraint, self.phone)
+        form.add(name_input).add(salary_input).add(phone_input)
+        return form
+
+    def edit(self, attributes):
+        self.name = attributes[0]
+        self.salary = attributes[1]
+        self.phone = attributes[2]
+
+    def delete(self, parent: HasInternalRelations):
+        parent.del_relation(self)
 
     def __init__(self, id=-1, name='', salary=0, phone=''):
         self.id = id

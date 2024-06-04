@@ -25,10 +25,10 @@ whSev.accept_transaction(whSev.active_trans[0])
 # hire и fire
 wrk = Worker(1, "loh", 350, "88005553555")
 whSev.hire(wrk)
-whSev.fire(wrk)
+# whSev.fire(wrk)
 
 # del_items
-tr = Transaction([item1, item2])
+tr = Transaction([item1, item2], "транзация")
 tr.del_items([Item("sapog")])
 whSev.del_items([Item("moloko")])
 
@@ -39,9 +39,9 @@ whSev.del_transaction(tr)
 # sell_items & buy_items
 sevStore = Store(1, 3000)
 sevStore.buy_items([item1])
-sevStore.accept_transaction(sevStore.active_trans[0])
+# sevStore.accept_transaction(sevStore.active_trans[0])
 
-sevStore.sell_items([Item("moloko", 90)])
+# sevStore.sell_items([Item("moloko", 90)])
 
 # get_salary
 wrk.salary += 300
