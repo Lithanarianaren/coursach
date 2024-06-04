@@ -63,6 +63,20 @@ class HasInternalRelations(Relationable):
         raise NotImplementedError
 
 
+    def add_relation(self, item):
+        """
+        чтобы добавить Relationable элемент надо вызвать эту функцию у его родителя
+        """
+        raise NotImplementedError
+
+
+    def del_relation(self, item):
+        """
+        При удалении элемента надо знать откуда он удаляется, так что сделал так
+        """
+        raise NotImplementedError
+
+
 class Addable(Relationable, ABC):
     """
     класс, от которого наследуют все Relationable, к которым прикручена форма создания
@@ -89,8 +103,8 @@ class Editable(Relationable, ABC):
     класс, от которого наследуют все Relationable, к которым прикручена форма редактирования
     """
 
-    @staticmethod
-    def edit_form_blueprint() -> FormBlueprint:
+    # сделал метод не статическим потому что в форму надо подставлять значения конкретного элемента
+    def edit_form_blueprint(self) -> FormBlueprint:
         """
         возвращает чертёж формы редактирования.
         """
@@ -108,7 +122,7 @@ class Deletable(Relationable, ABC):
     класс, от которого наследуют все Relationable, к которым прикручена кнопка удаления. полиморфизм на максималках.
     """
 
-    def delete(self):
+    def delete(self, parent: HasInternalRelations):
         """
         :return: удаление объекта из базы данных и все (каскадные?) вытекающие
         """

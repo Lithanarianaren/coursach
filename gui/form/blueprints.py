@@ -44,6 +44,7 @@ def unsigned_int_constraint(value: str) -> tuple[Any, Optional[str]]:
         return constraint, message
 
 
+
 class ElementBlueprint:
     """
     Класс чертежа элемента формы: один элемент - одна переменная в форме. Объединяет их в общем только одно: у них
@@ -119,6 +120,8 @@ class FormBlueprint:
             .add(...) \
             .add(...)
         ну и так далее. очень удобная штука)
+
+        реально удобно
         """
         self.elements.append(element)
         return self
