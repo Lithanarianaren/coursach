@@ -108,6 +108,11 @@ class BaseTransaction(HasInternalRelations, Addable, Editable, ABC):
 
 
 class Transaction(BaseTransaction):
+
+    @staticmethod
+    def get_class_name():
+        return "Транзакция купли/продажи"
+
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
         return [Item]
@@ -173,6 +178,11 @@ class Transaction(BaseTransaction):
 
 
 class MoveTransaction(BaseTransaction):
+
+    @staticmethod
+    def get_class_name():
+        return "Движение товара"
+
     def complete(self):
         if self.parent.complete_move_transaction(self):
             self.completed = True
@@ -222,7 +232,7 @@ class MoveTransaction(BaseTransaction):
         uncle_index = all_addresses.index(self.uncle.str_address())
         return FormBlueprint() \
             .add(TextElem("Описание транзакции", str_constraint, self.desc)) \
-            .add(ListElem("Отгрузка на", Warehouse.get_all_addresses(), 0, True))
+            .add(ListElem("Отгрузка на", Warehouse.get_all_addresses(), uncle_index, True))
 
     def edit(self, attributes):
         self.desc = attributes[0]
@@ -234,6 +244,10 @@ class MoveTransaction(BaseTransaction):
 
 
 class Warehouse(HasInternalRelations, Addable, Editable):
+
+    @staticmethod
+    def get_class_name():
+        return "Склад"
 
     @staticmethod
     def get_all_addresses() -> list[str]:
@@ -286,14 +300,14 @@ class Warehouse(HasInternalRelations, Addable, Editable):
 
     @staticmethod
     def get_relation_names() -> list[str]:
-        return ["Кадры", "Опись", "Перемещения"]
+        return ["Опись", "Перемещения"]
 
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
-        return [Worker, Item, Transaction]
+        return [Item, Transaction]
 
     def get_relation_data(self) -> list[list[Relationable]]:
-        return [self.workers, self.stored_items, self.movements]
+        return [self.stored_items, self.movements]
 
     def add_relation(self, item):
         res: int = -1
@@ -301,8 +315,6 @@ class Warehouse(HasInternalRelations, Addable, Editable):
             res = self.add_items([item])
         elif isinstance(item, BaseTransaction):
             res = self.add_transaction(item)
-        elif isinstance(item, Worker):
-            res = self.hire(item)
         return res
 
     def del_relation(self, item):
@@ -311,13 +323,11 @@ class Warehouse(HasInternalRelations, Addable, Editable):
             res = self.del_items([item])
         elif isinstance(item, BaseTransaction):
             res = self.del_transaction(item)
-        elif isinstance(item, Worker):
-            res = self.fire(item)
         return res
 
     def __init__(self, country, city, street, house):
         self.stored_items = []
-        self.workers = []
+
         self.address = {
             "country": country,
             "city": city,
@@ -419,21 +429,7 @@ class Warehouse(HasInternalRelations, Addable, Editable):
         warehouse.add_transaction(tr)
         return 1
 
-    def hire(self, worker):
-        if worker not in self.workers:
-            self.workers.append(worker)
-            return 1
-        else:
-            print("Ошибка при найме: рабочий уже нанят")
-            return 0
 
-    def fire(self, worker):
-        if worker in self.workers:
-            self.workers.remove(worker)
-            return 1
-        else:
-            print("Ошибка при увольнении: выбранный рабочий не нанят")
-            return 0
 
     def complete_move_transaction(self, transaction: MoveTransaction):
         if transaction.inward:
@@ -447,6 +443,10 @@ class Warehouse(HasInternalRelations, Addable, Editable):
 
 
 class Store(Warehouse):
+
+    @staticmethod
+    def get_class_name():
+        return "Магазин"
 
     @staticmethod
     def get_relation_attributes() -> list[str]:
@@ -481,7 +481,7 @@ class Store(Warehouse):
             .add(TextElem("Город", str_constraint, self.address["city"])) \
             .add(TextElem("Улица", str_constraint, self.address["street"])) \
             .add(TextElem("Дом", str_constraint, self.address["house"])) \
-            .add(TextElem("Баланс",int_constraint,str(self.cash)))
+            .add(TextElem("Баланс", int_constraint, str(self.cash)))
 
     def edit(self, attributes: list):
         house_address = ', '.join(attributes)
@@ -507,7 +507,28 @@ class Store(Warehouse):
     def __init__(self, country, city, street, house, cash=0):
         super().__init__(country, city, street, house)
         self.cash = cash
+        self.workers: list[Worker] = []
         self.diary = []
+
+    def add_relation(self, item):
+        res: int = -1
+        if isinstance(item, Item):
+            res = self.add_items([item])
+        elif isinstance(item, BaseTransaction):
+            res = self.add_transaction(item)
+        elif isinstance(item, Worker):
+            res = self.hire(item)
+        return res
+
+    def del_relation(self, item):
+        res: int = -1
+        if isinstance(item, Item):
+            res = self.del_items([item])
+        elif isinstance(item, BaseTransaction):
+            res = self.del_transaction(item)
+        elif isinstance(item, Worker):
+            res = self.fire(item)
+        return res
 
     def add_transaction(self, transaction: BaseTransaction):
         if isinstance(transaction, MoveTransaction):
@@ -583,6 +604,30 @@ class Store(Warehouse):
             self.cash += transaction.cost
             return self.sell_items(transaction.items)
 
+    def pay_all_workers(self):
+        sum_ = sum([worker.salary for worker in self.workers])
+        if sum_ < self.cash:
+            messagebox.showerror("Ошибка оплаты", "Баланс магазина меньше, чем зарплата всех работников.")
+            return
+        for wrk in self.workers:
+            wrk.get_salary(self)
+
+    def hire(self, worker):
+        if worker not in self.workers:
+            self.workers.append(worker)
+            return 1
+        else:
+            print("Ошибка при найме: рабочий уже нанят")
+            return 0
+
+    def fire(self, worker):
+        if worker in self.workers:
+            self.workers.remove(worker)
+            return 1
+        else:
+            print("Ошибка при увольнении: выбранный рабочий не нанят")
+            return 0
+
 
 class Worker(Addable, Editable, Deletable):
     @staticmethod
@@ -647,6 +692,10 @@ class Worker(Addable, Editable, Deletable):
 class System(HasInternalRelations):
     single_instance = None
 
+    @staticmethod
+    def get_class_name():
+        return "Программа для управления бизнес-процессами сети магазинов электроники"
+
     def __init__(self):
         System.single_instance = self
         self.stores: list[Store] = []
@@ -677,10 +726,10 @@ class System(HasInternalRelations):
 
     @staticmethod
     def get_relation_attributes() -> list[str]:
-        pass
+        return ["Версия"]
 
     def get_relation_object(self) -> list[str]:
-        pass
+        return ["0.3.2"]
 
     @staticmethod
     def all_addresses():

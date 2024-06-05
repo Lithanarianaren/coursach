@@ -1,4 +1,6 @@
-from classes import BaseTransaction
+from tkinter.ttk import Frame
+
+from classes import BaseTransaction, Worker, Store
 from gui.event.Event import Event
 from gui.event.Listener import Listener
 from gui.form.Form import Form
@@ -55,7 +57,6 @@ class Window(Listener, WindowLayout):
                 form_result = Form(item.edit_form_blueprint()).launch()
                 if form_result is not None:
                     item.edit(form_result)
-                    self.fill_tabs()
                 self.fill_tabs()
             return
         if event.name == 'delete_query':
@@ -64,6 +65,15 @@ class Window(Listener, WindowLayout):
                 item.delete(self.__obj)
                 self.fill_tabs()
             return
+        if event.name == 'pay_me':
+            if isinstance(event.data['item'], Worker) and isinstance(self.__obj, Store):
+                item: Worker = event.data['item']
+                item.get_salary(self.__obj)
+                self.fill_tabs()
+        if event.name == 'pay_all':
+            if isinstance(self.__obj, Store):
+                self.__obj.pay_all_workers()
+                self.fill_tabs()
 
     TABLE_WIDTH = 750
 
@@ -88,5 +98,6 @@ class Window(Listener, WindowLayout):
             self._tab_control.add(self._tabs[-1], text=name)
 
     def fill_tabs(self):
+        self.fill_desc(self.__obj)
         for i in range(len(self._tabs)):
             self._tabs[i].setup(self.__obj.get_relation_classes()[i], 750, self.__obj.get_relation_data()[i])

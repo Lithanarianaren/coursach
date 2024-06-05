@@ -1,7 +1,7 @@
 from tkinter import ttk
 from tkinter.ttk import Frame
 
-from classes import Transaction
+from classes import Transaction, Worker
 from gui.event.Event import Event
 from gui.event.Listener import Listener
 from gui.relation.Relationable import HasInternalRelations, Deletable
@@ -59,6 +59,11 @@ class RelationElement(Listener, Frame):
                 rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
                 offset -= RelationElement.button_len
                 rel_button.bind("<Button-1>", self.clicked_trn)
+        if isinstance(item, Worker):
+            rel_button = ttk.Button(self, text="Зарплата")
+            rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
+            offset -= RelationElement.button_len
+            rel_button.bind("<Button-1>", self.send_event(Event('pay_me',{'item':self.item})))
         if isinstance(item, HasInternalRelations):
             self.rel_button = ttk.Button(self, text="Таблицы...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
@@ -72,7 +77,7 @@ class RelationElement(Listener, Frame):
                 rel_button.bind("<Button-1>", self.clicked_edit)
         if isinstance(item, Deletable):
             if item.can_be_deleted():
-                rel_button = ttk.Button(self, text="Удалить...")
+                rel_button = ttk.Button(self, text="Удалить")
                 rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
                 offset -= RelationElement.button_len
                 rel_button.bind("<Button-1>", self.clicked_delete)
@@ -89,6 +94,11 @@ class RelationElement(Listener, Frame):
             label.place(rely=0.5, relx=i / length, x=-self.offset / length * i, anchor='w', bordermode='inside')
             self.labels.append(label)
         offset = self.offset
+        if issubclass(item, Worker):
+            rel_button = ttk.Button(self, text="Выдать всем")
+            rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
+            offset -= RelationElement.button_len
+            rel_button.bind("<Button-1>", self.send_event(Event('pay_all', {})))
         if issubclass(item, Addable):
             self.rel_button = ttk.Button(self, text="Добавить...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')

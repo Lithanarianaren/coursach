@@ -10,6 +10,5 @@ sevStore = System()
 
 
 w=Window(sevStore)
-print(0)
 from gui import styles
 w.mainloop()

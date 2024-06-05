@@ -76,6 +76,10 @@ class HasInternalRelations(Relationable):
         """
         raise NotImplementedError
 
+    @staticmethod
+    def get_class_name():
+        raise NotImplementedError
+
 
 class Addable(Relationable, ABC):
     """
