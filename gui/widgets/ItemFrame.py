@@ -7,6 +7,13 @@ from gui.widgets.Relation import Relation
 
 
 class ItemFrame(Listener, ttk.Frame):
+
+    def set_yview(self,y):
+        self.relation.set_yview(y)
+
+    def get_yview(self):
+        return self.relation.get_yview()
+
     def __init__(self, master):
         super(ItemFrame, self).__init__(master)
         self.relation = None

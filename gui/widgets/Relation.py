@@ -10,6 +10,12 @@ from gui.widgets.RelationElement import RelationElement
 
 class Relation(Listener, Frame):
 
+    def set_yview(self,y):
+        self.canvas.yview_moveto(y)
+
+    def get_yview(self):
+        return self.canvas.yview()[0]
+
     def __init__(self, master: ttk.Frame, object_type: type[Relationable], **kw):
         if not issubclass(object_type, Relationable):
             raise TypeError("Tried to pass a non-Relationable class to a Relation")
@@ -18,10 +24,6 @@ class Relation(Listener, Frame):
         self.__object_type: type[Relationable] = object_type
         self.__headers: list[str] = object_type.get_relation_attributes()
         self.__data: list = [Relationable]
-
-        # for header in self.__headers:
-        #    self.heading(header, text=header)
-        #    self.column(header,width=width//len(self.__headers), anchor=W)
         self.configure(borderwidth=0, padding=0)
         self.upper_frame = RelationElement(master=self)
         self.upper_frame.add_listener(self)
@@ -33,7 +35,6 @@ class Relation(Listener, Frame):
         self.frame.place(x=0, y=0, relheight=1, relwidth=1)
         self.vsb = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.vsb.set)
-
         self.vsb.pack(side="right", fill="y")
         self.canvas.pack(side="left", fill="both", expand=True)
         self._frame_id = self.canvas.create_window((0, 0), window=self.frame, anchor="nw",

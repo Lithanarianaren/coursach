@@ -2,7 +2,7 @@ from tkinter import messagebox
 
 from gui.form.blueprints import *
 from gui.relation.Relationable import *
-from gui.utilities import get_datetime
+from gui.utilities import get_datetime, dd_mm_yyyy, get_tuple_datetime
 
 
 class Item(Addable, Editable, Deletable):
@@ -484,8 +484,9 @@ class Store(Warehouse):
             .add(TextElem("Баланс", int_constraint, str(self.cash)))
 
     def edit(self, attributes: list):
-        house_address = ', '.join(attributes)
-        if house_address not in Warehouse.get_all_addresses():
+        house_address = ', '.join(attributes[:4])
+        impostor = Warehouse.find_warehouse_by_address(house_address)
+        if impostor is None or impostor is self:
             address_denomination = ["country", "city", "street", "house"]
             for i in range(4):
                 self.address[address_denomination[i]] = attributes[i]
@@ -606,7 +607,7 @@ class Store(Warehouse):
 
     def pay_all_workers(self):
         sum_ = sum([worker.salary for worker in self.workers])
-        if sum_ < self.cash:
+        if sum_ > self.cash:
             messagebox.showerror("Ошибка оплаты", "Баланс магазина меньше, чем зарплата всех работников.")
             return
         for wrk in self.workers:
@@ -632,10 +633,11 @@ class Store(Warehouse):
 class Worker(Addable, Editable, Deletable):
     @staticmethod
     def get_relation_attributes() -> list[str]:
-        return ["№", "Имя", "Оклад", "Номер телефона"]
+        return ["№", "Имя", "Оклад", "Номер телефона", "Последняя оплата"]
 
     def get_relation_object(self) -> list[str]:
-        return [str(self.id), self.name, str(self.salary), self.phone]
+        return [str(self.id), self.name, str(self.salary), self.phone,
+                '----' if self.last_paid is None else dd_mm_yyyy(*self.last_paid)]
 
     @staticmethod
     def add_form_blueprint() -> FormBlueprint:
@@ -671,6 +673,7 @@ class Worker(Addable, Editable, Deletable):
         parent.del_relation(self)
 
     def __init__(self, id=-1, name='', salary=0, phone=''):
+        self.last_paid = None
         self.id = id
         self.name = name
         self.salary = salary
@@ -682,10 +685,10 @@ class Worker(Addable, Editable, Deletable):
     def get_salary(self, store):
         if self.salary <= store.cash:
             store.cash -= self.salary
+            self.last_paid = get_tuple_datetime()
             return 1
         else:
-            print("Ошибка при выдаче зарплаты: в магазине с id={} недостаточно денег "
-                  "(cash={}, требуемая сумма = {})".format(store.id, store.cash, self.salary))
+            messagebox.showerror("Баланс магазина меньше, чем оклад работника.")
             return 0
 
 

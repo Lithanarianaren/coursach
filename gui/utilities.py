@@ -11,6 +11,21 @@ def check_date(d: int, m: int, y: int):
     return True
 
 
+def n_numbers(number, n):
+    s = ''
+    for i in range(n):
+        s = str((number // (10 ** i)) % 10) + s
+    return s
+
+
+def dd_mm_yyyy(dd, mm, yyyy):
+    return f"{n_numbers(dd, 2)}/{n_numbers(mm, 2)}/{n_numbers(yyyy, 4)}"
+
+
 def get_datetime():
     now = datetime.now()
-    return f"{now.day}.{now.month}.{now.year} {now.hour}:{now.minute}"
+    return f"{now.day}/{now.month}/{now.year} {now.hour}:{now.minute}"
+
+def get_tuple_datetime():
+    now = datetime.now()
+    return now.day, now.month, now.year

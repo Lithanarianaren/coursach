@@ -63,7 +63,7 @@ class RelationElement(Listener, Frame):
             rel_button = ttk.Button(self, text="Зарплата")
             rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
-            rel_button.bind("<Button-1>", self.send_event(Event('pay_me',{'item':self.item})))
+            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_me',{'item':self.item})))
         if isinstance(item, HasInternalRelations):
             self.rel_button = ttk.Button(self, text="Таблицы...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
@@ -98,7 +98,7 @@ class RelationElement(Listener, Frame):
             rel_button = ttk.Button(self, text="Выдать всем")
             rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
-            rel_button.bind("<Button-1>", self.send_event(Event('pay_all', {})))
+            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_all', {})))
         if issubclass(item, Addable):
             self.rel_button = ttk.Button(self, text="Добавить...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')

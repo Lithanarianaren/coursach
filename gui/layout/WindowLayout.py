@@ -33,3 +33,6 @@ class WindowLayout(Tk):
         self.desc_frame.place(anchor='nw', relwidth=1, relheight=1, height=-35, y=35)
         for header, value in zip(headers,values):
             ttk.Label(self.desc_frame, text=f"{header}: {value}").pack(side='top',fill='x')
+
+    def get_tab_index(self):
+        return self._tab_control.index(self._tab_control.select())
