@@ -1,3 +1,4 @@
+from classes import BaseTransaction
 from gui.event.Event import Event
 from gui.event.Listener import Listener
 from gui.form.Form import Form
@@ -30,12 +31,18 @@ class Window(Listener, WindowLayout):
         self.reassign(item)
 
     def receive_event(self, event: Event):
+        if event.name == 'trn_query':
+            item = event.data["item"]
+            if isinstance(item,BaseTransaction):
+                item.complete()
+                self.fill_tabs()
+            return
         if event.name == 'internal_relation_query':
             if isinstance(event.data['item'], HasInternalRelations):
                 self.forward(event.data['item'])
             return
         if event.name == 'add_query':
-            if isinstance(event.data['class'], type[Addable]):
+            if issubclass(event.data['class'], Addable):
                 datatype: type[Addable] = event.data['class']
                 form_result = Form(datatype.add_form_blueprint()).launch()
                 if form_result is not None:
@@ -54,7 +61,7 @@ class Window(Listener, WindowLayout):
         if event.name == 'delete_query':
             if isinstance(event.data['item'], Deletable):
                 item: Deletable = event.data['item']
-                item.delete()
+                item.delete(self.__obj)
                 self.fill_tabs()
             return
 
@@ -69,8 +76,8 @@ class Window(Listener, WindowLayout):
         self.setup_tabs()
         self.fill_tabs()
 
-        self.backbutton.bind("<Button-1>", lambda e: self.back)
-        self.bind("<Escape>", lambda e: self.back)
+        self.backbutton.bind("<Button-1>", lambda e: self.back())
+        self.bind("<Escape>", lambda e: self.back())
 
     def setup_tabs(self):
         for name in self.__obj.get_relation_names():

@@ -103,6 +103,9 @@ class Editable(Relationable, ABC):
     класс, от которого наследуют все Relationable, к которым прикручена форма редактирования
     """
 
+    def can_be_edited(self):
+        return True
+
     # сделал метод не статическим потому что в форму надо подставлять значения конкретного элемента
     def edit_form_blueprint(self) -> FormBlueprint:
         """
@@ -121,6 +124,9 @@ class Deletable(Relationable, ABC):
     """
     класс, от которого наследуют все Relationable, к которым прикручена кнопка удаления. полиморфизм на максималках.
     """
+
+    def can_be_deleted(self):
+        return True
 
     def delete(self, parent: HasInternalRelations):
         """

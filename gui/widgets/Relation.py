@@ -24,6 +24,7 @@ class Relation(Listener, Frame):
         #    self.column(header,width=width//len(self.__headers), anchor=W)
         self.configure(borderwidth=0, padding=0)
         self.upper_frame = RelationElement(master=self)
+        self.upper_frame.add_listener(self)
         self.upper_frame.place(x=0, y=0, relwidth=1, height=30)
         self.lower_frame = Frame(self)
         self.lower_frame.place(x=0, y=30, relwidth=1, height=-30, relheight=1)

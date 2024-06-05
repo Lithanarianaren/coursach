@@ -1,6 +1,7 @@
 from tkinter import ttk
 from tkinter.ttk import Frame
 
+from classes import Transaction
 from gui.event.Event import Event
 from gui.event.Listener import Listener
 from gui.relation.Relationable import HasInternalRelations, Deletable
@@ -30,7 +31,8 @@ class RelationElement(Listener, Frame):
         item_offset = RelationElement.button_len * (
                 issubclass(type_rel, HasInternalRelations) +
                 issubclass(type_rel, Editable) +
-                issubclass(type_rel, Deletable)
+                issubclass(type_rel, Deletable) +
+                issubclass(type_rel, Transaction)
         )
         return max(class_offset, item_offset)
 
@@ -51,21 +53,29 @@ class RelationElement(Listener, Frame):
 
             self.labels.append(label)
         offset = self.offset
+        if isinstance(item, Transaction):
+            if not item.completed:
+                rel_button = ttk.Button(self, text="Провести")
+                rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
+                offset -= RelationElement.button_len
+                rel_button.bind("<Button-1>", self.clicked_trn)
         if isinstance(item, HasInternalRelations):
             self.rel_button = ttk.Button(self, text="Таблицы...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
             self.rel_button.bind("<Button-1>", self.clicked_rel)
         if isinstance(item, Editable):
-            self.rel_button = ttk.Button(self, text="Изменить...")
-            self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
-            offset -= RelationElement.button_len
-            self.rel_button.bind("<Button-1>", self.clicked_edit)
+            if item.can_be_edited():
+                rel_button = ttk.Button(self, text="Изменить...")
+                rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
+                offset -= RelationElement.button_len
+                rel_button.bind("<Button-1>", self.clicked_edit)
         if isinstance(item, Deletable):
-            self.rel_button = ttk.Button(self, text="Удалить...")
-            self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
-            offset -= RelationElement.button_len
-            self.rel_button.bind("<Button-1>", self.clicked_delete)
+            if item.can_be_deleted():
+                rel_button = ttk.Button(self, text="Удалить...")
+                rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
+                offset -= RelationElement.button_len
+                rel_button.bind("<Button-1>", self.clicked_delete)
         self.bind('<Configure>', lambda e: self.wrap_labels())
 
     def fill_class(self, item: type[Relationable]):
@@ -79,7 +89,7 @@ class RelationElement(Listener, Frame):
             label.place(rely=0.5, relx=i / length, x=-self.offset / length * i, anchor='w', bordermode='inside')
             self.labels.append(label)
         offset = self.offset
-        if isinstance(item, Addable):
+        if issubclass(item, Addable):
             self.rel_button = ttk.Button(self, text="Добавить...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
@@ -97,3 +107,6 @@ class RelationElement(Listener, Frame):
 
     def clicked_delete(self, event):
         self.send_event(Event('delete_query', {'item': self.item}))
+
+    def clicked_trn(self, event):
+        self.send_event(Event('trn_query', {'item': self.item}))

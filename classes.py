@@ -1,6 +1,8 @@
-from gui.relation.Relationable import HasInternalRelations
-from gui.relation.Relationable import *
+from tkinter import messagebox
+
 from gui.form.blueprints import *
+from gui.relation.Relationable import *
+from gui.utilities import get_datetime
 
 
 class Item(Addable, Editable, Deletable):
@@ -46,68 +48,31 @@ class Item(Addable, Editable, Deletable):
     def delete(self, parent: HasInternalRelations):
         parent.del_relation(self)
 
-
     def get_relation_object(self) -> list[str]:
         return [self.name, str(self.cost), str(self.quantity)]
 
 
-class Transaction(HasInternalRelations, Addable, Editable):
-    @staticmethod
-    def get_relation_classes() -> list[type[Relationable]]:
-        return [Item]
-
-    def get_relation_object(self) -> list[str]:
-        return [self.desc, str(self.cost)]
-
-    @staticmethod
-    def get_relation_names() -> list[str]:
-        return ["Товары"]
-
-    def get_relation_data(self) -> list[list[Relationable]]:
-        return [self.items]
-
-    @staticmethod
-    def get_relation_attributes() -> list[str]:
-        return ["Описание", "Сумма"]
-
+class BaseTransaction(HasInternalRelations, Addable, Editable, ABC):
     def add_relation(self, item):
         self.add_items([item])
 
     def del_relation(self, item):
         self.del_items([item])
 
-    @staticmethod
-    def add_form_blueprint() -> FormBlueprint:
-        form = FormBlueprint()
-        # хз как сделать чертеж где можно сколько угодно item-ов добавлять
-        desc_input = TextElem("Описаание транзакции", str_constraint)
-        form.add(desc_input)
-        return form
-
-    @staticmethod
-    def add(parent: HasInternalRelations, attributes: list):
-        tr = Transaction(None, attributes[0])
-        parent.add_relation(tr)
-
-    def edit_form_blueprint(self) -> FormBlueprint:
-        form = FormBlueprint()
-        # хз как сделать чертеж где можно сколько угодно item-ов добавлять
-        desc_input = TextElem("Описаание транзакции", str_constraint, self.desc)
-        form.add(desc_input)
-        return form
-
-    def edit(self, attributes):
-        self.desc = attributes[0]
-
-    def __init__(self, items=None, desc='', cost=0):
+    def __init__(self, parent, inward, completed=False, items=None, desc=''):
+        self.inward = inward
+        self.parent: Warehouse = parent
+        self.completed = completed
         if items is None:
             items = []
         self.desc = desc
-        self.cost = cost
-        if isinstance(items, list):
-            self.items = items
-        else:
-            self.items = []
+        self.items = items
+
+    def can_be_edited(self):
+        return not self.completed
+
+    def complete(self):
+        raise NotImplementedError
 
     def add_items(self, items):  # ожидает список предметов
         for i in items:
@@ -141,42 +106,200 @@ class Transaction(HasInternalRelations, Addable, Editable):
             self.items.remove(items_to_del[i])
         return 1
 
+
+class Transaction(BaseTransaction):
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Item]
+
+    def get_relation_object(self) -> list[str]:
+        return [self.desc,
+                "Закупка" if self.inward else "Продажа",
+                str(self.count_cost()),
+                "Проведено" if self.completed else "В работе"]
+
+    @staticmethod
+    def get_relation_names() -> list[str]:
+        return ["Товары"]
+
+    def get_relation_data(self) -> list[list[Relationable]]:
+        return [self.items]
+
+    @staticmethod
+    def get_relation_attributes() -> list[str]:
+        return ["Описание", "Тип", "Сумма", "Состояние"]
+
+    def add_relation(self, item):
+        self.add_items([item])
+
+    def del_relation(self, item):
+        self.del_items([item])
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Описание транзакции", str_constraint)) \
+            .add(ListElem("Статус", ["Продажа", "Закупка"]))
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        if isinstance(parent, Store):
+            trn = Transaction(parent, attributes[1] == "Закупка", attributes[0])
+            parent.add_relation(trn)
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Описание транзакции", str_constraint, self.desc)) \
+            .add(ListElem("Статус", ["Продажа", "Закупка"], self.inward))
+
+    def edit(self, attributes):
+        self.desc = attributes[0]
+        self.inward = attributes[1] == "Закупка"
+
+    def complete(self):
+        if self.parent.complete_monetary_transaction(self):
+            self.completed = True
+
+    def __init__(self, parent, inward, desc='', completed=False, items=None, cost=0):
+        super().__init__(parent, inward, completed, items, desc)
+        self.parent: Store = parent
+        self.cost = cost
+
     def count_cost(self):  # считает цену транзакции исходя из цены и кол-ва ее item-ов, не вызывать при перемещении
         self.cost = 0
         for i in self.items:
             self.cost += i.cost * i.quantity
         return self.cost
 
-    def __str__(self):
-        return "description={}, cost={}, items={}".format(self.desc, self.cost, self.items)
 
-
-class Warehouse(HasInternalRelations):
-    @staticmethod
-    def get_relation_attributes() -> list[str]:
-        return ["№","Адрес"]
-
-    def get_relation_object(self) -> list[str]:
-        addr_denom=["country","city","street","house"]
-        addr=', '.join([self.address[i] for i in addr_denom])
-        return [str(self.id),addr]
-
-    @staticmethod
-    def get_relation_names() -> list[str]:
-        return ["Кадры","Опись","Дневник","Текущие транзакции"]
+class MoveTransaction(BaseTransaction):
+    def complete(self):
+        if self.parent.complete_move_transaction(self):
+            self.completed = True
 
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
-        return [Worker,Item,Transaction,Transaction]
+        return [Item]
+
+    def get_relation_object(self) -> list[str]:
+        return [self.desc,
+                "Приход" if self.inward else "Отгрузка",
+                self.uncle.str_address(),
+                "Проведено" if self.completed else "В работе"]
+
+    @staticmethod
+    def get_relation_names() -> list[str]:
+        return ["Товары"]
 
     def get_relation_data(self) -> list[list[Relationable]]:
-        return [self.workers,self.stored_items,self.diary,self.active_trans]
+        return [self.items]
+
+    @staticmethod
+    def get_relation_attributes() -> list[str]:
+        return ["Описание", "Тип", "Адрес склада", "Состояние"]
+
+    def add_relation(self, item):
+        self.add_items([item])
+
+    def del_relation(self, item):
+        self.del_items([item])
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Описание транзакции", str_constraint)) \
+            .add(ListElem("Отгрузка на", Warehouse.get_all_addresses(), 0, True))
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        if isinstance(parent, Store):
+            trn = MoveTransaction(parent, False, Warehouse.find_warehouse_by_address(attributes[1]),
+                                  False, None, attributes[0])
+            parent.add_relation(trn)
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        all_addresses: list[str] = Warehouse.get_all_addresses()
+        uncle_index = all_addresses.index(self.uncle.str_address())
+        return FormBlueprint() \
+            .add(TextElem("Описание транзакции", str_constraint, self.desc)) \
+            .add(ListElem("Отгрузка на", Warehouse.get_all_addresses(), 0, True))
+
+    def edit(self, attributes):
+        self.desc = attributes[0]
+        self.uncle = Warehouse.find_warehouse_by_address(attributes[1])
+
+    def __init__(self, parent, inward, uncle, completed=False, items=None, desc=''):
+        super().__init__(parent, inward, completed, items, desc)
+        self.uncle: Warehouse = uncle
+
+
+class Warehouse(HasInternalRelations, Addable, Editable):
+
+    @staticmethod
+    def get_all_addresses() -> list[str]:
+        return System.all_addresses()
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Страна", str_constraint)) \
+            .add(TextElem("Город", str_constraint)) \
+            .add(TextElem("Улица", str_constraint)) \
+            .add(TextElem("Дом", str_constraint))
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        house = Warehouse(*attributes)
+        house_address = house.str_address()
+        if house_address not in Warehouse.get_all_addresses():
+            parent.add_relation(house)
+        else:
+            messagebox.showerror("Ошибка в создании склада", "Адрес уже используется")
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Страна", str_constraint, self.address["country"])) \
+            .add(TextElem("Город", str_constraint, self.address["city"])) \
+            .add(TextElem("Улица", str_constraint, self.address["street"])) \
+            .add(TextElem("Дом", str_constraint, self.address["house"]))
+
+    def edit(self, attributes: list):
+        house_address = ', '.join(attributes)
+        if house_address not in Warehouse.get_all_addresses():
+            address_denomination = ["country", "city", "street", "house"]
+            for i in range(4):
+                self.address[address_denomination[i]] = attributes[i]
+        else:
+            messagebox.showerror("Ошибка в изменении адреса", "Адрес уже используется")
+
+    @staticmethod
+    def get_relation_attributes() -> list[str]:
+        return ["Адрес", "Хранится товаров"]
+
+    def str_address(self):
+        address_denomination = ["country", "city", "street", "house"]
+        return ', '.join([self.address[i] for i in address_denomination])
+
+    def get_relation_object(self) -> list[str]:
+
+        return [self.str_address(), sum([item.quantity for item in self.stored_items])]
+
+    @staticmethod
+    def get_relation_names() -> list[str]:
+        return ["Кадры", "Опись", "Перемещения"]
+
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Worker, Item, Transaction]
+
+    def get_relation_data(self) -> list[list[Relationable]]:
+        return [self.workers, self.stored_items, self.movements]
 
     def add_relation(self, item):
         res: int = -1
         if isinstance(item, Item):
             res = self.add_items([item])
-        elif isinstance(item, Transaction):
+        elif isinstance(item, BaseTransaction):
             res = self.add_transaction(item)
         elif isinstance(item, Worker):
             res = self.hire(item)
@@ -186,24 +309,22 @@ class Warehouse(HasInternalRelations):
         res: int = -1
         if isinstance(item, Item):
             res = self.del_items([item])
-        elif isinstance(item, Transaction):
+        elif isinstance(item, BaseTransaction):
             res = self.del_transaction(item)
         elif isinstance(item, Worker):
             res = self.fire(item)
         return res
 
-    def __init__(self, id=-1):
-        self.id = id
+    def __init__(self, country, city, street, house):
         self.stored_items = []
         self.workers = []
         self.address = {
-            "country": "",
-            "city": "",
-            "street": "",
-            "house": ""
+            "country": country,
+            "city": city,
+            "street": street,
+            "house": house
         }
-        self.diary = []
-        self.active_trans = []
+        self.movements = []
 
     def set_address(self, country='не указано', city='не указано', street='не указано', house='не указано'):
         self.address["country"] = country
@@ -245,29 +366,19 @@ class Warehouse(HasInternalRelations):
             self.stored_items.remove(items_to_del[i])
         return 1
 
-    def accept_transaction(self, transaction):  # если транзакция есть в списке активных транзакций - принять
-        if transaction in self.active_trans:
-            self.active_trans.remove(transaction)
-            self.add_items(transaction.items)
-
-            diary_note = Transaction(transaction.items, "принята поставка")
-            self.diary.append(diary_note)
-            return 1
-        else:
-            print("Ошибка при принятии транзакции: транзакция не была заявлена")
-            return 0
-
-    def add_transaction(self, transaction):
-        if transaction not in self.active_trans:
-            self.active_trans.append(transaction)
+    def add_transaction(self, transaction: BaseTransaction):
+        if not isinstance(transaction, MoveTransaction): return
+        if transaction not in self.movements:
+            self.movements.append(transaction)
             return 1
         else:
             print("Ошибка при добавлении транзакции: транзакция уже заявлена")
             return 0
 
-    def del_transaction(self, transaction):
-        if transaction in self.active_trans:
-            self.active_trans.remove(transaction)
+    def del_transaction(self, transaction: BaseTransaction):
+        if not isinstance(transaction, MoveTransaction): return
+        if transaction in self.movements:
+            self.movements.remove(transaction)
             return 1
         else:
             print("Ошибка при удалении транзакции: нет такой транзакции")
@@ -303,19 +414,14 @@ class Warehouse(HasInternalRelations):
                 items_to_transf[i].quantity -= items[i].quantity
 
         # добавление новой транзакции переданному складу
-        tr = Transaction(items)
+        tr = MoveTransaction(warehouse, inward=True, uncle=self, completed=False, items=items,
+                             desc=f'Привоз: {self.str_address()} от {get_datetime()}')
         warehouse.add_transaction(tr)
-
-        # добавление записи в журнал
-        diary_note = Transaction(items, "перемещение товара на склад c id={}".format(warehouse.id))
-        self.diary.append(diary_note)
         return 1
 
     def hire(self, worker):
         if worker not in self.workers:
             self.workers.append(worker)
-            diary_note = Transaction([], "нанят {}, id={}".format(worker.name, worker.id))
-            self.diary.append(diary_note)
             return 1
         else:
             print("Ошибка при найме: рабочий уже нанят")
@@ -324,18 +430,116 @@ class Warehouse(HasInternalRelations):
     def fire(self, worker):
         if worker in self.workers:
             self.workers.remove(worker)
-            diary_note = Transaction([], "уволен {}, id={}".format(worker.name, worker.id))
-            self.diary.append(diary_note)
             return 1
         else:
             print("Ошибка при увольнении: выбранный рабочий не нанят")
             return 0
 
+    def complete_move_transaction(self, transaction: MoveTransaction):
+        if transaction.inward:
+            self.add_items(transaction.items)
+        else:
+            self.transfer_items(transaction.items, transaction.uncle)
+
+    @staticmethod
+    def find_warehouse_by_address(strad):
+        return System.address_to_warehouse(strad)
+
 
 class Store(Warehouse):
-    def __init__(self, id, cash=0):
-        super().__init__(id)
+
+    @staticmethod
+    def get_relation_attributes() -> list[str]:
+        return ["Адрес", "Хранится товаров", "Баланс"]
+
+    def get_relation_object(self) -> list[str]:
+        return [self.str_address(),
+                sum([item.quantity for item in self.stored_items]),
+                self.cash]
+
+    @staticmethod
+    def add_form_blueprint() -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Страна", str_constraint)) \
+            .add(TextElem("Город", str_constraint)) \
+            .add(TextElem("Улица", str_constraint)) \
+            .add(TextElem("Дом", str_constraint)) \
+            .add(TextElem("Баланс", int_constraint, "0"))
+
+    @staticmethod
+    def add(parent: HasInternalRelations, attributes: list):
+        house = Store(*attributes)
+        house_address = house.str_address()
+        if house_address not in Warehouse.get_all_addresses():
+            parent.add_relation(house)
+        else:
+            messagebox.showerror("Ошибка в создании склада", "Адрес уже используется")
+
+    def edit_form_blueprint(self) -> FormBlueprint:
+        return FormBlueprint() \
+            .add(TextElem("Страна", str_constraint, self.address["country"])) \
+            .add(TextElem("Город", str_constraint, self.address["city"])) \
+            .add(TextElem("Улица", str_constraint, self.address["street"])) \
+            .add(TextElem("Дом", str_constraint, self.address["house"])) \
+            .add(TextElem("Баланс",int_constraint,str(self.cash)))
+
+    def edit(self, attributes: list):
+        house_address = ', '.join(attributes)
+        if house_address not in Warehouse.get_all_addresses():
+            address_denomination = ["country", "city", "street", "house"]
+            for i in range(4):
+                self.address[address_denomination[i]] = attributes[i]
+            self.cash = attributes[4]
+        else:
+            messagebox.showerror("Ошибка в изменении адреса", "Адрес уже используется")
+
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Worker, Item, Transaction, MoveTransaction]
+
+    def get_relation_data(self) -> list[list[Relationable]]:
+        return [self.workers, self.stored_items, self.diary, self.movements]
+
+    @staticmethod
+    def get_relation_names() -> list[str]:
+        return ["Кадры", "Опись", "Дневник", "Перемещения"]
+
+    def __init__(self, country, city, street, house, cash=0):
+        super().__init__(country, city, street, house)
         self.cash = cash
+        self.diary = []
+
+    def add_transaction(self, transaction: BaseTransaction):
+        if isinstance(transaction, MoveTransaction):
+            if transaction not in self.movements:
+                self.movements.append(transaction)
+                return 1
+            else:
+                print("Ошибка при добавлении транзакции: транзакция уже заявлена")
+                return 0
+        if isinstance(transaction, Transaction):
+            if transaction not in self.diary:
+                self.diary.append(transaction)
+                return 1
+            else:
+                print("Ошибка при добавлении транзакции: транзакция уже заявлена")
+                return 0
+
+    def del_transaction(self, transaction: BaseTransaction):
+        if isinstance(transaction, MoveTransaction):
+            if transaction in self.movements:
+                self.movements.remove(transaction)
+                return 1
+            else:
+                print("Ошибка при удалении транзакции: нет такой транзакции")
+                return 0
+        if isinstance(transaction, Transaction):
+            if transaction in self.diary:
+                self.diary.remove(transaction)
+                return 1
+            else:
+                print("Ошибка при удалении транзакции: нет такой транзакции")
+                return 0
 
     def sell_items(self, items):
         # проверка, есть ли такие товары в нужном количестве на складе
@@ -368,37 +572,25 @@ class Store(Warehouse):
                 items_to_sell[i].quantity -= items[i].quantity
             self.cash += items[i].cost * items[i].quantity
 
-        # добавление записи в дневник
-        diary_note = Transaction(items, "продажа товара")
-        diary_note.count_cost()
-        self.diary.append(diary_note)
         return 1
 
-    def buy_items(self, items):
-        tr = Transaction(items)
-        tr.count_cost()
-
-        if tr.cost > self.cash:
-            print("Ошибка при покупке товара: недостаточно денег")
-            return 0
-
-        self.active_trans.append(tr)
-        self.cash -= tr.cost
-
-        # добавление записи в дневник
-        diary_note = Transaction(items, 'покупка товара')
-        diary_note.count_cost()
-        self.diary.append(diary_note)
-        return 1
+    def complete_monetary_transaction(self, transaction: Transaction):
+        if transaction.inward:
+            self.cash -= transaction.cost
+            self.add_items(transaction.items)
+            return 1
+        else:
+            self.cash += transaction.cost
+            return self.sell_items(transaction.items)
 
 
 class Worker(Addable, Editable, Deletable):
     @staticmethod
     def get_relation_attributes() -> list[str]:
-        return ["№","Имя","Оклад","Номер телефона"]
+        return ["№", "Имя", "Оклад", "Номер телефона"]
 
     def get_relation_object(self) -> list[str]:
-        return [str(self.id),self.name,str(self.salary),self.phone]
+        return [str(self.id), self.name, str(self.salary), self.phone]
 
     @staticmethod
     def add_form_blueprint() -> FormBlueprint:
@@ -445,9 +637,6 @@ class Worker(Addable, Editable, Deletable):
     def get_salary(self, store):
         if self.salary <= store.cash:
             store.cash -= self.salary
-            # добавление записи в дневник магазина
-            diary_note = Transaction([], "выдана зарплата работнику {}, id={}".format(self.name, self.id), self.salary)
-            store.diary.append(diary_note)
             return 1
         else:
             print("Ошибка при выдаче зарплаты: в магазине с id={} недостаточно денег "
@@ -455,62 +644,52 @@ class Worker(Addable, Editable, Deletable):
             return 0
 
 
-# тесты, чекать по желанию
-item1 = Item("moloko", 100, 3)
-item2 = Item("sapog", 1000, 13)
-item3 = Item("karandash", 35, 50)
+class System(HasInternalRelations):
+    single_instance = None
 
-wh1 = Warehouse()
-wh1.id = 1
-wh1.add_items([item1, item2])
+    def __init__(self):
+        System.single_instance = self
+        self.stores: list[Store] = []
+        self.warehouses: list[Warehouse] = []
 
-whSev = Warehouse()
-whSev.id = 2
-whSev.add_items([item3])
+    @staticmethod
+    def get_relation_names() -> list[str]:
+        return ["Магазины", "Склады"]
 
-# count_cost
-tr1 = Transaction([item1, item3], "new purchase")
+    def get_relation_data(self) -> list[list[Relationable]]:
+        return [System.single_instance.stores, System.single_instance.warehouses]
 
-print(tr1.count_cost())
+    @staticmethod
+    def get_relation_classes() -> list[type[Relationable]]:
+        return [Store, Warehouse]
 
-# transfer_items & add_transaction & accept_transaction & add_items
-itemToTrans = Item("moloko", 100, 2)
-wh1.transfer_items([itemToTrans], whSev)
-whSev.accept_transaction(whSev.active_trans[0])
+    def add_relation(self, item):
+        if isinstance(item, Store):
+            System.single_instance.stores.append(item)
+        elif isinstance(item, Warehouse):
+            System.single_instance.warehouses.append(item)
 
-# hire и fire
-wrk = Worker(1, "loh", 350, "88005553555")
-whSev.hire(wrk)
-whSev.fire(wrk)
+    def del_relation(self, item):
+        if isinstance(item, Store) and item in System.single_instance.stores:
+            System.single_instance.stores.remove(item)
+        elif isinstance(item, Warehouse) and item in System.single_instance.warehouses:
+            System.single_instance.warehouses.remove(item)
 
-# del_items
-tr = Transaction([item1, item2])
-tr.del_items([Item("sapog")])
-whSev.del_items([Item("moloko")])
+    @staticmethod
+    def get_relation_attributes() -> list[str]:
+        pass
 
-for i in whSev.stored_items:
-    print(i)
+    def get_relation_object(self) -> list[str]:
+        pass
 
-# del_transaction
-whSev.add_transaction(tr)
-whSev.del_transaction(tr)
+    @staticmethod
+    def all_addresses():
+        return [store.str_address() for store in System.single_instance.stores] + \
+               [warehouse.str_address() for warehouse in System.single_instance.warehouses]
 
-# sell_items & buy_items
-sevStore = Store(1, 3000)
-sevStore.buy_items([item1])
-sevStore.accept_transaction(sevStore.active_trans[0])
-
-print(sevStore.stored_items[0], sevStore.cash)
-
-sevStore.sell_items([Item("moloko", 90)])
-
-print(sevStore.cash)
-
-# get_salary
-wrk.salary += 300
-wrk.get_salary(sevStore)
-
-print(sevStore.cash)
-
-for i in sevStore.diary:
-    print(i)
+    @staticmethod
+    def address_to_warehouse(strad):
+        for warehouse in System.single_instance.stores + System.single_instance.warehouses:
+            if warehouse.str_address() == strad:
+                return warehouse
+        return None

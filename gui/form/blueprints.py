@@ -18,7 +18,7 @@ def int_constraint(value: str) -> tuple[Any, Optional[str]]:
 
 
 def str_constraint(value: str) -> tuple[Any, Optional[str]]:
-    return int(value), None
+    return value, None
 
 
 def date_constraint(value: str) -> tuple[Any, Optional[str]]:
