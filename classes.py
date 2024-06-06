@@ -51,6 +51,14 @@ class Item(Addable, Editable, Deletable):
     def get_relation_object(self) -> list[str]:
         return [self.name, str(self.cost), str(self.quantity)]
 
+    def get_json(self):
+        d = {
+            "name": self.name,
+            "quantity": self.quantity,
+            "cost": self.cost,
+        }
+        return d
+
 
 class BaseTransaction(HasInternalRelations, Addable, Editable, ABC):
     def add_relation(self, item):
@@ -165,6 +173,19 @@ class Transaction(BaseTransaction):
         if self.parent.complete_monetary_transaction(self):
             self.completed = True
 
+    def get_json(self):
+        items_list = []
+        for i in self.items:
+            items_list.append(i.get_json())
+        d = {
+            'inward': self.inward,
+            'desc': self.desc,
+            'completed': self.completed,
+            'items': items_list,
+            'cost': self.cost
+        }
+        return d
+
     def __init__(self, parent, inward, desc='', completed=False, items=None, cost=0):
         super().__init__(parent, inward, completed, items, desc)
         self.parent: Store = parent
@@ -237,6 +258,19 @@ class MoveTransaction(BaseTransaction):
     def edit(self, attributes):
         self.desc = attributes[0]
         self.uncle = Warehouse.find_warehouse_by_address(attributes[1])
+
+    def get_json(self):
+        items_list = []
+        for i in self.items:
+            items_list.append(i.get_json())
+        d = {
+            'uncle': self.uncle.address,
+            'inward': self.inward,
+            'desc': self.desc,
+            'completed': self.completed,
+            'items': items_list
+        }
+        return d
 
     def __init__(self, parent, inward, uncle, completed=False, items=None, desc=''):
         super().__init__(parent, inward, completed, items, desc)
@@ -324,6 +358,20 @@ class Warehouse(HasInternalRelations, Addable, Editable):
         elif isinstance(item, BaseTransaction):
             res = self.del_transaction(item)
         return res
+
+    def get_json(self):
+        stored_items_json = []
+        for i in self.stored_items:
+            stored_items_json.append(i.get_json())
+        movements_json = []
+        for i in self.movements:
+            movements_json.append(i.get_json())
+        d = {
+            'address': self.address,
+            'items': stored_items_json,
+            'movements': movements_json
+        }
+        return d
 
     def __init__(self, country, city, street, house):
         self.stored_items = []
@@ -504,6 +552,29 @@ class Store(Warehouse):
     def get_relation_names() -> list[str]:
         return ["Кадры", "Опись", "Дневник", "Перемещения"]
 
+    def get_json(self):
+        workers_json = []
+        for i in self.workers:
+            workers_json.append(i.get_json())
+        diary_json = []
+        for i in self.diary:
+            diary_json.append(i.get_json())
+        items_json = []
+        for i in self.stored_items:
+            items_json.append(i.get_json())
+        movements_json = []
+        for i in self.movements:
+            movements_json.append(i.get_json())
+        d = {
+            "address": self.address,
+            "cash": self.cash,
+            "workers": workers_json,
+            "diary": diary_json,
+            "items": items_json,
+            "movements": movements_json
+        }
+        return d
+
     def __init__(self, country, city, street, house, cash=0):
         super().__init__(country, city, street, house)
         self.cash = cash
@@ -670,6 +741,15 @@ class Worker(Addable, Editable, Deletable):
     def delete(self, parent: HasInternalRelations):
         parent.del_relation(self)
 
+    def get_json(self):
+        d = {
+            "id": self.id,
+            "name": self.name,
+            "salary": self.salary,
+            "phone": self.phone
+        }
+        return d
+
     def __init__(self, id=-1, name='', salary=0, phone=''):
         self.id = id
         self.name = name
@@ -695,6 +775,19 @@ class System(HasInternalRelations):
     @staticmethod
     def get_class_name():
         return "Программа для управления бизнес-процессами сети магазинов электроники"
+
+    def get_json(self):
+        stores = []
+        for i in self.stores:
+            stores.append(i.get_json())
+        warehouses = []
+        for i in self.warehouses:
+            warehouses.append(i.get_json())
+        d = {
+            "stores": stores,
+            "warehouses": warehouses
+        }
+        return d
 
     def __init__(self):
         System.single_instance = self
