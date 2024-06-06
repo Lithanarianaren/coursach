@@ -8,6 +8,8 @@ from gui.utilities import get_datetime, dd_mm_yyyy, get_tuple_datetime
 class Item(Addable, Editable, Deletable):
     def __init__(self, name="item", quantity=1, cost=0):
         self.name = name
+        if name not in System.item_names:
+            System.item_names.append(name)
         self.cost = cost
         self.quantity = quantity
 
@@ -21,7 +23,7 @@ class Item(Addable, Editable, Deletable):
     @staticmethod
     def add_form_blueprint() -> FormBlueprint:
         form = FormBlueprint()
-        name_input = TextElem("Наименование", str_constraint)
+        name_input = ListElem("Наименование", System.item_names, None, False)
         quantity_input = TextElem("Количество", unsigned_int_constraint)
         cost_input = TextElem("Цена", unsigned_int_constraint)
         form.add(name_input).add(quantity_input).add(cost_input)
@@ -29,19 +31,35 @@ class Item(Addable, Editable, Deletable):
 
     @staticmethod
     def add(parent: HasInternalRelations, attributes: list):
+        for i in range(len(parent.get_relation_classes())):
+            if parent.get_relation_classes()[i] == Item:
+                for j in parent.get_relation_data()[i]:
+                    if isinstance(j, Item):
+                        if j.name == attributes[0]:
+                            messagebox.showerror("Ошибка", "Товар с таким названием уже присутствует")
+                            return
         item = Item(*attributes)
         parent.add_relation(item)
 
     def edit_form_blueprint(self) -> FormBlueprint:
         form = FormBlueprint()
-        name_input = TextElem("Наименование", str_constraint, self.name)
-        quantity_input = TextElem("Количество", str_constraint, self.quantity)
+        name_input = ListElem("Наименование", System.item_names, System.item_names.index(self.name), False)
+        quantity_input = TextElem("Количество", unsigned_int_constraint, self.quantity)
         cost_input = TextElem("Цена", unsigned_int_constraint, self.cost)
         form.add(name_input).add(quantity_input).add(cost_input)
         return form
 
-    def edit(self, attributes: list):
+    def edit(self, attributes: list, parent: HasInternalRelations):
+        for i in range(len(parent.get_relation_classes())):
+            if parent.get_relation_classes()[i] == Item:
+                for j in parent.get_relation_data()[i]:
+                    if isinstance(j, Item):
+                        if j is not self and j.name == attributes[0]:
+                            messagebox.showerror("Ошибка", "Товар с таким названием уже присутствует")
+                            return
         self.name = attributes[0]
+        if self.name not in System.item_names:
+            System.item_names.append(self.name)
         self.quantity = attributes[1]
         self.cost = attributes[2]
 
@@ -61,7 +79,11 @@ class Item(Addable, Editable, Deletable):
 
 
 class BaseTransaction(HasInternalRelations, Addable, Editable, ABC):
-    def add_relation(self, item):
+
+    def can_modify_children(self) -> bool:
+        return not self.completed
+
+    def add_relation(self, item: Item):
         self.add_items([item])
 
     def del_relation(self, item):
@@ -74,7 +96,7 @@ class BaseTransaction(HasInternalRelations, Addable, Editable, ABC):
         if items is None:
             items = []
         self.desc = desc
-        self.items = items
+        self.items:list[Item] = items
 
     def can_be_edited(self):
         return not self.completed
@@ -142,9 +164,6 @@ class Transaction(BaseTransaction):
     def get_relation_attributes() -> list[str]:
         return ["Описание", "Тип", "Сумма", "Состояние"]
 
-    def add_relation(self, item):
-        self.add_items([item])
-
     def del_relation(self, item):
         self.del_items([item])
 
@@ -165,7 +184,7 @@ class Transaction(BaseTransaction):
             .add(TextElem("Описание транзакции", str_constraint, self.desc)) \
             .add(ListElem("Статус", ["Продажа", "Закупка"], self.inward))
 
-    def edit(self, attributes):
+    def edit(self, attributes, parent: HasInternalRelations):
         self.desc = attributes[0]
         self.inward = attributes[1] == "Закупка"
 
@@ -229,9 +248,6 @@ class MoveTransaction(BaseTransaction):
     def get_relation_attributes() -> list[str]:
         return ["Описание", "Тип", "Адрес склада", "Состояние"]
 
-    def add_relation(self, item):
-        self.add_items([item])
-
     def del_relation(self, item):
         self.del_items([item])
 
@@ -255,7 +271,7 @@ class MoveTransaction(BaseTransaction):
             .add(TextElem("Описание транзакции", str_constraint, self.desc)) \
             .add(ListElem("Отгрузка на", Warehouse.get_all_addresses(), uncle_index, True))
 
-    def edit(self, attributes):
+    def edit(self, attributes, parent: HasInternalRelations):
         self.desc = attributes[0]
         self.uncle = Warehouse.find_warehouse_by_address(attributes[1])
 
@@ -277,7 +293,7 @@ class MoveTransaction(BaseTransaction):
         self.uncle: Warehouse = uncle
 
 
-class Warehouse(HasInternalRelations, Addable, Editable):
+class Warehouse(HasInternalRelations, Addable, Editable, Deletable):
 
     @staticmethod
     def get_class_name():
@@ -311,7 +327,7 @@ class Warehouse(HasInternalRelations, Addable, Editable):
             .add(TextElem("Улица", str_constraint, self.address["street"])) \
             .add(TextElem("Дом", str_constraint, self.address["house"]))
 
-    def edit(self, attributes: list):
+    def edit(self, attributes: list, parent: HasInternalRelations):
         house_address = ', '.join(attributes)
         if house_address not in Warehouse.get_all_addresses():
             address_denomination = ["country", "city", "street", "house"]
@@ -338,7 +354,7 @@ class Warehouse(HasInternalRelations, Addable, Editable):
 
     @staticmethod
     def get_relation_classes() -> list[type[Relationable]]:
-        return [Item, Transaction]
+        return [Item, MoveTransaction]
 
     def get_relation_data(self) -> list[list[Relationable]]:
         return [self.stored_items, self.movements]
@@ -374,7 +390,7 @@ class Warehouse(HasInternalRelations, Addable, Editable):
         return d
 
     def __init__(self, country, city, street, house):
-        self.stored_items = []
+        self.stored_items: list[Item] = []
 
         self.address = {
             "country": country,
@@ -396,11 +412,14 @@ class Warehouse(HasInternalRelations, Addable, Editable):
             flag = 0
             for j in self.stored_items:
                 if i.name == j.name:
+                    full_price = j.quantity * j.cost + i.quantity * i.cost
                     j.quantity += i.quantity
+                    j.cost = round(full_price / j.quantity)
                     flag = 1
                     break
             if not flag:
-                self.stored_items.append(i)
+                new_item=Item(i.name, i.quantity, i.cost)
+                self.stored_items.append(new_item)
         return 1
 
     def del_items(self, items):  # передаются товары, из товаров на складе удаляются товары с тем же названием
@@ -453,12 +472,11 @@ class Warehouse(HasInternalRelations, Addable, Editable):
                     flag = 1
                     items_to_transf.append(j)
                     if i.quantity > j.quantity:
-                        print("Ошибка при перемещении: нет такого количества товара: ", i.name, i.quantity)
-                        print("Актуальное количество товара: ", j.quantity)
+                        messagebox.showerror("Ошибка при перемещении", f"Нет {i.quantity} единиц товара {i.name}")
                         error_flag = 1
                     break
             if not flag:
-                print("Ошибка при перемещении: нет товара с таким названием: ", i.name)
+                messagebox.showerror("Ошибка при перемещении", f"Нет товара с именем {i.name}")
                 error_flag = 1
 
         if error_flag:
@@ -477,13 +495,12 @@ class Warehouse(HasInternalRelations, Addable, Editable):
         warehouse.add_transaction(tr)
         return 1
 
-
-
     def complete_move_transaction(self, transaction: MoveTransaction):
         if transaction.inward:
             self.add_items(transaction.items)
+            return 1
         else:
-            self.transfer_items(transaction.items, transaction.uncle)
+            return self.transfer_items(transaction.items, transaction.uncle)
 
     @staticmethod
     def find_warehouse_by_address(strad):
@@ -531,7 +548,7 @@ class Store(Warehouse):
             .add(TextElem("Дом", str_constraint, self.address["house"])) \
             .add(TextElem("Баланс", int_constraint, str(self.cash)))
 
-    def edit(self, attributes: list):
+    def edit(self, attributes: list, parent: HasInternalRelations):
         house_address = ', '.join(attributes[:4])
         impostor = Warehouse.find_warehouse_by_address(house_address)
         if impostor is None or impostor is self:
@@ -644,14 +661,13 @@ class Store(Warehouse):
                 if i.name == j.name:
                     flag = 1
                     if i.quantity > j.quantity:
-                        print("Ошибка при продаже: нет такого количества товара: ", i.name, i.quantity)
-                        print("Актуальное количество товара: ", j.quantity)
+                        messagebox.showerror("Ошибка при продаже", f"Нет {i.quantity} единиц товара {i.name}")
                         error_flag = 1
                     else:
                         items_to_sell.append(j)
                     break
             if not flag:
-                print("Ошибка при продаже: нет товара с таким названием: ", i.name)
+                messagebox.showerror("Ошибка при перемещении", f"Нет товара с названием {i.name}")
                 error_flag = 1
 
         if error_flag:
@@ -673,7 +689,6 @@ class Store(Warehouse):
             self.add_items(transaction.items)
             return 1
         else:
-            self.cash += transaction.cost
             return self.sell_items(transaction.items)
 
     def pay_all_workers(self):
@@ -735,7 +750,7 @@ class Worker(Addable, Editable, Deletable):
         form.add(name_input).add(salary_input).add(phone_input)
         return form
 
-    def edit(self, attributes):
+    def edit(self, attributes, parent: HasInternalRelations):
         self.name = attributes[0]
         self.salary = attributes[1]
         self.phone = attributes[2]
@@ -748,12 +763,13 @@ class Worker(Addable, Editable, Deletable):
             "id": self.id,
             "name": self.name,
             "salary": self.salary,
-            "phone": self.phone
+            "phone": self.phone,
+            "last_paid": self.last_paid
         }
         return d
 
-    def __init__(self, id=-1, name='', salary=0, phone=''):
-        self.last_paid = None
+    def __init__(self, id=-1, name='', salary=0, phone='', last_paid=None):
+        self.last_paid = last_paid
         self.id = id
         self.name = name
         self.salary = salary
@@ -774,6 +790,8 @@ class Worker(Addable, Editable, Deletable):
 
 class System(HasInternalRelations):
     single_instance = None
+
+    item_names = list()
 
     @staticmethod
     def get_class_name():
@@ -825,7 +843,7 @@ class System(HasInternalRelations):
         return ["Версия"]
 
     def get_relation_object(self) -> list[str]:
-        return ["0.3.2"]
+        return ["0.3.6"]
 
     @staticmethod
     def all_addresses():

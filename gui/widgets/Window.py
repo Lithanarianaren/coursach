@@ -1,12 +1,13 @@
-from tkinter.ttk import Frame
+from tkinter import Menu, Toplevel
 
-from classes import BaseTransaction, Worker, Store
+from bd.jsonSaveLoad import SavingJSON, LoadJSON
+from classes import BaseTransaction, Worker, Store, System
 from gui.event.Event import Event
 from gui.event.Listener import Listener
 from gui.form.Form import Form
 from gui.layout.WindowLayout import WindowLayout
-from gui.relation.Relationable import HasInternalRelations, Deletable
 from gui.relation.Relationable import Addable, Editable
+from gui.relation.Relationable import HasInternalRelations, Deletable
 from gui.widgets.ItemFrame import ItemFrame
 
 
@@ -36,7 +37,7 @@ class Window(Listener, WindowLayout):
     def receive_event(self, event: Event):
         if event.name == 'trn_query':
             item = event.data["item"]
-            if isinstance(item,BaseTransaction):
+            if isinstance(item, BaseTransaction):
                 item.complete()
                 self.update_tabs()
             return
@@ -57,7 +58,7 @@ class Window(Listener, WindowLayout):
                 item: Editable = event.data['item']
                 form_result = Form(item.edit_form_blueprint()).launch()
                 if form_result is not None:
-                    item.edit(form_result)
+                    item.edit(form_result, self.__obj)
                 self.update_tabs()
             return
         if event.name == 'delete_query':
@@ -73,11 +74,11 @@ class Window(Listener, WindowLayout):
                 self.update_tabs()
             return
         if event.name == 'pay_all':
-            print(event.name)
             if isinstance(self.__obj, Store):
                 self.__obj.pay_all_workers()
                 self.update_tabs()
             return
+
     TABLE_WIDTH = 750
 
     def __init__(self, obj: HasInternalRelations):
@@ -88,7 +89,9 @@ class Window(Listener, WindowLayout):
         self.__backstack: list[HasInternalRelations] = []
         self.__tab_backstack: list[int] = []
         self.setup_tabs()
-
+        self.setup_menu()
+        self.bind('<F5>',lambda e: SavingJSON.save_system(System.single_instance))
+        self.bind('<F2>',lambda e: self.load_file())
         self.backbutton.bind("<Button-1>", lambda e: self.back())
         self.bind("<Escape>", lambda e: self.back())
 
@@ -104,11 +107,32 @@ class Window(Listener, WindowLayout):
     def fill_tabs(self):
         self.fill_desc(self.__obj)
         for i in range(len(self._item_frames)):
-            self._item_frames[i].setup(self.__obj.get_relation_classes()[i], 750, self.__obj.get_relation_data()[i])
+            self._item_frames[i].setup(self.__obj,
+                                       self.__obj.get_relation_classes()[i], self.__obj.get_relation_data()[i])
 
     def update_tabs(self):
         self.fill_desc(self.__obj)
         for i in range(len(self._item_frames)):
             saved_position = self._item_frames[i].get_yview()
-            self._item_frames[i].setup(self.__obj.get_relation_classes()[i], 750, self.__obj.get_relation_data()[i])
+            self._item_frames[i].setup(self.__obj,
+                                       self.__obj.get_relation_classes()[i], self.__obj.get_relation_data()[i])
             self._item_frames[i].set_yview(saved_position)
+
+    def setup_menu(self):
+        self.option_add('*tearOff', False)
+        self.toplevel = self.winfo_toplevel()
+        self.menu = Menu(self)
+        self.toplevel['menu'] = self.menu
+        self.file_menu = Menu(self.menu)
+        self.menu.add_cascade(menu=self.file_menu, label="Файл")
+        self.file_menu.add_command(label="Сохранить", accelerator="F5",
+                                   command=lambda: SavingJSON.save_system(System.single_instance))
+        self.file_menu.add_command(label="Загрузить", accelerator="F2",
+                                   command=lambda: self.load_file())
+
+    def load_file(self):
+        LoadJSON.load_system()
+        self.__backstack=[]
+        self.__tab_backstack=[]
+        self.reset()
+        self.reassign(System.single_instance)

@@ -2,79 +2,334 @@
     "stores": [
         {
             "address": {
-                "country": "RUSSIA",
-                "city": "zhopa",
-                "street": "bear-avenu",
-                "house": "12"
+                "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
+                "house": "1/65"
             },
-            "cash": 1,
+            "cash": 548430,
             "workers": [
                 {
-                    "id": 5,
-                    "name": "Vasya",
-                    "salary": 300,
-                    "phone": "+79556439911"
+                    "id": 1,
+                    "name": "\u041c\u0443\u0440\u0435\u043d\u044c\u043a\u0438\u0439 \u0410.\u042e.",
+                    "salary": 60000,
+                    "phone": "+79787978797",
+                    "last_paid": [
+                        6,
+                        6,
+                        2024
+                    ]
                 }
             ],
             "diary": [
                 {
                     "inward": true,
-                    "desc": "pervaya pokupka",
-                    "completed": false,
+                    "desc": "",
+                    "completed": true,
                     "items": [
                         {
-                            "name": "yoburt",
-                            "quantity": 10,
-                            "cost": 100
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                            "quantity": 5,
+                            "cost": 36990
                         },
                         {
-                            "name": "tvogor",
-                            "quantity": 20,
-                            "cost": 399
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Periphery 260",
+                            "quantity": 5,
+                            "cost": 24990
+                        },
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
+                            "quantity": 5,
+                            "cost": 30000
                         }
                     ],
-                    "cost": 499
+                    "cost": 459900
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
+                            "quantity": 1,
+                            "cost": 40000
+                        },
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Periphery 260",
+                            "quantity": 2,
+                            "cost": 30000
+                        }
+                    ],
+                    "cost": 100000
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                            "quantity": 1,
+                            "cost": 45000
+                        },
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 1,
+                            "cost": 35000
+                        }
+                    ],
+                    "cost": 80000
+                },
+                {
+                    "inward": true,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041a\u043b\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0430 Catwalk A113",
+                            "quantity": 10,
+                            "cost": 2300
+                        },
+                        {
+                            "name": "\u041c\u044b\u0448\u044c Crouch CND-SGM14",
+                            "quantity": 10,
+                            "cost": 700
+                        }
+                    ],
+                    "cost": 30000
+                },
+                {
+                    "inward": true,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 3,
+                            "cost": 24990
+                        },
+                        {
+                            "name": "\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438 Earcanola ERP-17",
+                            "quantity": 10,
+                            "cost": 670
+                        }
+                    ],
+                    "cost": 81670
                 }
             ],
             "items": [
                 {
-                    "name": "tvogor",
-                    "quantity": 20,
-                    "cost": 399
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                    "quantity": 2,
+                    "cost": 36990
+                },
+                {
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Periphery 260",
+                    "quantity": 3,
+                    "cost": 24990
+                },
+                {
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
+                    "quantity": 4,
+                    "cost": 30000
+                },
+                {
+                    "name": "\u041a\u043b\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0430 Catwalk A113",
+                    "quantity": 10,
+                    "cost": 2300
+                },
+                {
+                    "name": "\u041c\u044b\u0448\u044c Crouch CND-SGM14",
+                    "quantity": 10,
+                    "cost": 700
+                },
+                {
+                    "name": "\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438 Earcanola ERP-17",
+                    "quantity": 10,
+                    "cost": 670
                 }
             ],
-            "movements": []
-        }
-    ],
-    "warehouses": [
-        {
-            "address": {
-                "country": "Kazakhstan",
-                "city": "Shaurma-city",
-                "street": "Plov-avenu",
-                "house": 15
-            },
-            "items": [],
             "movements": [
                 {
                     "uncle": {
-                        "country": "RUSSIA",
-                        "city": "zhopa",
-                        "street": "bear-avenu",
-                        "house": "12"
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0412\u0442\u043e\u0440\u0430\u044f",
+                        "house": "10\u0411"
                     },
-                    "inward": true,
-                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: RUSSIA, zhopa, bear-avenu, 12 \u043e\u0442 6.6.2024 18:45",
-                    "completed": false,
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
                     "items": [
                         {
-                            "name": "yoburt",
-                            "quantity": 10,
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                            "quantity": 2,
+                            "cost": 0
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0412\u0442\u043e\u0440\u0430\u044f",
+                        "house": "10\u0411"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u0412\u0442\u043e\u0440\u0430\u044f, 10\u0411 \u043e\u0442 6/6/2024 21:14",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
+                            "quantity": 30,
+                            "cost": 100
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                        "house": "1"
+                    },
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 6,
                             "cost": 100
                         }
                     ]
                 }
             ]
+        },
+        {
+            "address": {
+                "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                "street": "\u0412\u0442\u043e\u0440\u0430\u044f",
+                "house": "10\u0411"
+            },
+            "cash": 990000,
+            "workers": [
+                {
+                    "id": 1,
+                    "name": "\u0413\u0430\u0435\u043d\u043a\u043e \u0418.",
+                    "salary": 60000,
+                    "phone": "+79785553535",
+                    "last_paid": null
+                }
+            ],
+            "diary": [
+                {
+                    "inward": true,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
+                            "quantity": 100,
+                            "cost": 100
+                        }
+                    ],
+                    "cost": 10000
+                }
+            ],
+            "items": [
+                {
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                    "quantity": 2,
+                    "cost": 0
+                },
+                {
+                    "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
+                    "quantity": 70,
+                    "cost": 100
+                }
+            ],
+            "movements": [
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
+                        "house": "1/65"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u041f\u0435\u0440\u0432\u0430\u044f, 1/65 \u043e\u0442 6/6/2024 21:7",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
+                            "quantity": 2,
+                            "cost": 0
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
+                        "house": "1/65"
+                    },
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
+                            "quantity": 30,
+                            "cost": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "warehouses": [
+        {
+            "address": {
+                "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                "house": "1"
+            },
+            "items": [],
+            "movements": [
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
+                        "house": "1/65"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u041f\u0435\u0440\u0432\u0430\u044f, 1/65 \u043e\u0442 6/6/2024 22:44",
+                    "completed": false,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 6,
+                            "cost": 100
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "address": {
+                "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                "house": "2"
+            },
+            "items": [],
+            "movements": []
         }
     ]
 }

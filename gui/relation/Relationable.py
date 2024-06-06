@@ -88,13 +88,8 @@ class HasInternalRelations(Relationable):
     def get_class_name():
         raise NotImplementedError
 
-    @abstractmethod
-    def get_json(self):
-        """
-        преобразовывает объект в словарь со всей инфой о нем
-        :return: словарь, отображающий структуру объекта
-        """
-        raise NotImplementedError
+    def can_modify_children(self) -> bool:
+        return True
 
 
 class Addable(Relationable, ABC):
@@ -133,8 +128,9 @@ class Editable(Relationable, ABC):
         """
         raise NotImplementedError
 
-    def edit(self, attributes: list):
+    def edit(self, attributes: list, parent:HasInternalRelations):
         """
+        :param parent: объект, от которого произошёл изменяемый
         :param attributes: список атрибутов, соответствующий чертежу формы (если надо словарь, пиши)
         """
         raise NotImplementedError
@@ -149,7 +145,4 @@ class Deletable(Relationable, ABC):
         return True
 
     def delete(self, parent: HasInternalRelations):
-        """
-        :return: удаление объекта из базы данных и все (каскадные?) вытекающие
-        """
-        raise NotImplementedError
+        parent.del_relation(self)

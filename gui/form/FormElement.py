@@ -1,3 +1,4 @@
+from math import ceil
 from tkinter import ttk, LEFT, X, StringVar, RIGHT, BooleanVar
 from typing import Callable, Any, Optional
 
@@ -37,7 +38,7 @@ class TextFormElement(FormElementLayout):
     def make_frame(self, **kw):
         self.generate_frame(**kw)
         self.input = ttk.Entry(self.frame)
-        self.input.insert(0,self.var.get())
+        self.input.insert(0, self.var.get())
         self.input.pack(side=RIGHT)
 
 
@@ -64,20 +65,25 @@ class BoolFormElement(FormElementLayout):
 
 class SelectionFormElement(FormElementLayout):
 
-    def __init__(self, name, values: list[str], value=0, lock=True):
+    def __init__(self, name, values: list[str], value=None, lock=True):
         super().__init__(name)
         self.var = StringVar()
         self.values = values
         self.value = value
-        self.lock=lock
+        if value is None and lock:
+            self.value=0
+        self.lock = lock
 
     def get(self):
         return self.input.get(), None
 
     def make_frame(self, **kw):
         self.generate_frame(**kw)
-        self.input = ttk.Combobox(self.frame, values=self.values)
+        max_len = max([len(i) for i in self.values])
+        self.input = ttk.Combobox(self.frame, values=self.values, width=ceil(max_len*1.1), textvariable=self.var)
+
         if self.lock:
             self.input.config(state='readonly')
-        self.input.current(self.value)
+        if self.value is not None:
+            self.input.current(self.value)
         self.input.pack(side=RIGHT)

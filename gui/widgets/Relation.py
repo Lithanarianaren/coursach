@@ -4,7 +4,7 @@ from typing import Optional
 
 from gui.event.Event import Event
 from gui.event.Listener import Listener
-from gui.relation.Relationable import Relationable
+from gui.relation.Relationable import Relationable, HasInternalRelations
 from gui.widgets.RelationElement import RelationElement
 
 
@@ -17,6 +17,7 @@ class Relation(Listener, Frame):
         return self.canvas.yview()[0]
 
     def __init__(self, master: ttk.Frame, object_type: type[Relationable], **kw):
+        self.__parent_obj=None
         if not issubclass(object_type, Relationable):
             raise TypeError("Tried to pass a non-Relationable class to a Relation")
         super().__init__(master, **kw)
@@ -50,21 +51,22 @@ class Relation(Listener, Frame):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
-    def set_data(self, data: list):
+    def set_data(self, data: list[Relationable], parent_obj:HasInternalRelations):
         for entry in data:
             if not isinstance(entry, self.__object_type):
                 raise TypeError(f"Tried to pass a(n) {type(entry)} to a Relation of {self.__object_type}s")
         self.__data = data
+        self.__parent_obj=parent_obj
 
     def show_data(self):
-        self.upper_frame.fill_class(self.__object_type)
+        self.upper_frame.fill_class(self.__object_type, self.__parent_obj)
         for i, item in enumerate(self.__data):
             if not issubclass(self.__object_type, Relationable):
                 raise TypeError("Relation.__object_type is supposed to be private!")
             if not isinstance(item, self.__object_type):
                 continue
             elem = RelationElement(master=self.frame)
-            elem.fill_item(item)
+            elem.fill_item(item, self.__parent_obj)
             elem.add_listener(self)
             elem.pack(fill='x', expand=True)
             # self.insert('', END, values=item)

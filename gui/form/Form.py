@@ -94,6 +94,8 @@ class Form:
 
         confirmButton = ttk.Button(last_frame, text='ОК', command=lambda: self.confirm(window))
         cancelButton = ttk.Button(last_frame, text='Отмена', command=lambda: Form.cancel(window))
+        window.bind('<Return>',lambda e: self.confirm(window))
+        window.bind('<Escape>',lambda e: Form.cancel(window))
         cancelButton.pack(side=RIGHT, padx=5)
         confirmButton.pack(side=RIGHT, padx=5, pady=5)
         window.resizable(False, False)

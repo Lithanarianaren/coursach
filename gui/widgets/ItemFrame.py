@@ -19,12 +19,12 @@ class ItemFrame(Listener, ttk.Frame):
         self.relation = None
         self.lookup_button = None
 
-    def setup(self, obj_type, width, data):
+    def setup(self, parent_obj, obj_type, data):
         if isinstance(self.relation,Relation):
             self.relation.destroy()
         self.relation = Relation(self, obj_type)
         self.relation.add_listener(self)
-        self.relation.set_data(data)
+        self.relation.set_data(data, parent_obj)
         self.relation.show_data()
         self.relation.place(x=0,y=0,relheight=1,relwidth=1)
         #if issubclass(obj_type, HasInternalRelations):

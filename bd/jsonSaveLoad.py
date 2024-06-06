@@ -2,6 +2,7 @@ from bd.filesInterfaces import *
 from classes import *
 import json
 
+
 # для сохранения просто вызываем SaveJSON.save_system(System)
 # для загрузки просто вызываем LoadJSON.load_system(), вернет готовую систему
 
@@ -32,7 +33,7 @@ class LoadJSON(LoadInterface):
 
             sys = System()
             for i in stores:
-               sys.add_relation(i)
+                sys.add_relation(i)
             for i in warehouses:
                 sys.add_relation(i)
 
@@ -81,7 +82,8 @@ class LoadJSON(LoadInterface):
         name = worker["name"]
         salary = worker["salary"]
         phone = worker["phone"]
-        res = Worker(id, name, salary, phone)
+        last_paid = worker["last_paid"]
+        res = Worker(id, name, salary, phone, last_paid)
         return res
 
     @staticmethod
