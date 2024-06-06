@@ -1,0 +1,80 @@
+{
+    "stores": [
+        {
+            "address": {
+                "country": "RUSSIA",
+                "city": "zhopa",
+                "street": "bear-avenu",
+                "house": "12"
+            },
+            "cash": 1,
+            "workers": [
+                {
+                    "id": 5,
+                    "name": "Vasya",
+                    "salary": 300,
+                    "phone": "+79556439911"
+                }
+            ],
+            "diary": [
+                {
+                    "inward": true,
+                    "desc": "pervaya pokupka",
+                    "completed": false,
+                    "items": [
+                        {
+                            "name": "yoburt",
+                            "quantity": 10,
+                            "cost": 100
+                        },
+                        {
+                            "name": "tvogor",
+                            "quantity": 20,
+                            "cost": 399
+                        }
+                    ],
+                    "cost": 499
+                }
+            ],
+            "items": [
+                {
+                    "name": "tvogor",
+                    "quantity": 20,
+                    "cost": 399
+                }
+            ],
+            "movements": []
+        }
+    ],
+    "warehouses": [
+        {
+            "address": {
+                "country": "Kazakhstan",
+                "city": "Shaurma-city",
+                "street": "Plov-avenu",
+                "house": 15
+            },
+            "items": [],
+            "movements": [
+                {
+                    "uncle": {
+                        "country": "RUSSIA",
+                        "city": "zhopa",
+                        "street": "bear-avenu",
+                        "house": "12"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: RUSSIA, zhopa, bear-avenu, 12 \u043e\u0442 6.6.2024 18:45",
+                    "completed": false,
+                    "items": [
+                        {
+                            "name": "yoburt",
+                            "quantity": 10,
+                            "cost": 100
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

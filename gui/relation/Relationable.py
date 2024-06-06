@@ -20,6 +20,14 @@ class Relationable(ABC):
         """
         raise NotImplementedError
 
+    @abstractmethod
+    def get_json(self):
+        """
+        преобразовывает объект в словарь со всей инфой о нем
+        :return: словарь, отображающий структуру объекта
+        """
+        raise NotImplementedError
+
 
 class HasInternalRelations(Relationable):
 
@@ -78,6 +86,14 @@ class HasInternalRelations(Relationable):
 
     @staticmethod
     def get_class_name():
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_json(self):
+        """
+        преобразовывает объект в словарь со всей инфой о нем
+        :return: словарь, отображающий структуру объекта
+        """
         raise NotImplementedError
 
 
