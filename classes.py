@@ -24,7 +24,7 @@ class Item(Addable, Editable, Deletable):
     def add_form_blueprint() -> FormBlueprint:
         form = FormBlueprint()
         name_input = ListElem("Наименование", System.item_names, None, False)
-        quantity_input = TextElem("Количество", unsigned_int_constraint)
+        quantity_input = TextElem("Количество", positive_int_constraint)
         cost_input = TextElem("Цена", unsigned_int_constraint)
         form.add(name_input).add(quantity_input).add(cost_input)
         return form
@@ -44,7 +44,7 @@ class Item(Addable, Editable, Deletable):
     def edit_form_blueprint(self) -> FormBlueprint:
         form = FormBlueprint()
         name_input = ListElem("Наименование", System.item_names, System.item_names.index(self.name), False)
-        quantity_input = TextElem("Количество", unsigned_int_constraint, self.quantity)
+        quantity_input = TextElem("Количество", positive_int_constraint, self.quantity)
         cost_input = TextElem("Цена", unsigned_int_constraint, self.cost)
         form.add(name_input).add(quantity_input).add(cost_input)
         return form
@@ -259,7 +259,7 @@ class MoveTransaction(BaseTransaction):
 
     @staticmethod
     def add(parent: HasInternalRelations, attributes: list):
-        if isinstance(parent, Store):
+        if isinstance(parent, Warehouse):
             trn = MoveTransaction(parent, False, Warehouse.find_warehouse_by_address(attributes[1]),
                                   False, None, attributes[0])
             parent.add_relation(trn)
@@ -408,6 +408,19 @@ class Warehouse(HasInternalRelations, Addable, Editable, Deletable):
         return self.address
 
     def add_items(self, items):
+        for i in items:
+            flag = 0
+            for j in self.stored_items:
+                if i.name == j.name:
+                    j.quantity += i.quantity
+                    flag = 1
+                    break
+            if not flag:
+                new_item=Item(i.name, i.quantity, i.cost)
+                self.stored_items.append(new_item)
+        return 1
+
+    def add_items_calc_cost(self, items):
         for i in items:
             flag = 0
             for j in self.stored_items:
@@ -686,7 +699,7 @@ class Store(Warehouse):
     def complete_monetary_transaction(self, transaction: Transaction):
         if transaction.inward:
             self.cash -= transaction.cost
-            self.add_items(transaction.items)
+            self.add_items_calc_cost(transaction.items)
             return 1
         else:
             return self.sell_items(transaction.items)

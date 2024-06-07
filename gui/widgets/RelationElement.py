@@ -65,7 +65,7 @@ class RelationElement(Listener, Frame):
             rel_button = ttk.Button(self, text="Зарплата")
             rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
-            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_me',{'item':self.item})))
+            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_me',{'item':self.item, 'parent': self.parent_obj})))
         if isinstance(item, HasInternalRelations):
             self.rel_button = ttk.Button(self, text="Таблицы...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
@@ -101,7 +101,7 @@ class RelationElement(Listener, Frame):
             rel_button = ttk.Button(self, text="Выдать всем")
             rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
             offset -= RelationElement.button_len
-            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_all', {})))
+            rel_button.bind("<Button-1>", lambda e: self.send_event(Event('pay_all', {'parent': self.parent_obj})))
         if issubclass(item, Addable) and parent_obj.can_modify_children():
             self.rel_button = ttk.Button(self, text="Добавить...")
             self.rel_button.place(rely=0.5, relx=1, x=-offset, anchor='w', bordermode='inside')
@@ -110,16 +110,16 @@ class RelationElement(Listener, Frame):
         self.bind('<Configure>', lambda e: self.wrap_labels())
 
     def clicked_rel(self, event):
-        self.send_event(Event('internal_relation_query', {'item': self.item}))
+        self.send_event(Event('internal_relation_query', {'item': self.item, 'parent': self.parent_obj}))
 
     def clicked_add(self, event):
-        self.send_event(Event('add_query', {'class': self.item}))
+        self.send_event(Event('add_query', {'class': self.item, 'parent': self.parent_obj}))
 
     def clicked_edit(self, event):
-        self.send_event(Event('edit_query', {'item': self.item}))
+        self.send_event(Event('edit_query', {'item': self.item, 'parent': self.parent_obj}))
 
     def clicked_delete(self, event):
-        self.send_event(Event('delete_query', {'item': self.item}))
+        self.send_event(Event('delete_query', {'item': self.item, 'parent': self.parent_obj}))
 
     def clicked_trn(self, event):
-        self.send_event(Event('trn_query', {'item': self.item}))
+        self.send_event(Event('trn_query', {'item': self.item, 'parent': self.parent_obj}))

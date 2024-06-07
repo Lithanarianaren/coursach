@@ -1,4 +1,4 @@
-from tkinter import W, END, VERTICAL, ttk, Canvas
+from tkinter import W, END, VERTICAL, ttk, Canvas, NW
 from tkinter.ttk import Treeview, Frame
 from typing import Optional
 
@@ -8,10 +8,14 @@ from gui.relation.Relationable import Relationable, HasInternalRelations
 from gui.widgets.RelationElement import RelationElement
 
 
+
+
 class Relation(Listener, Frame):
 
     def set_yview(self,y):
+        self.update_idletasks()
         self.canvas.yview_moveto(y)
+
 
     def get_yview(self):
         return self.canvas.yview()[0]
@@ -43,6 +47,8 @@ class Relation(Listener, Frame):
         self.canvas.bind("<Configure>", self.resize_frame)
 
         self.frame.bind("<Configure>", self.onFrameConfigure)
+        self.canvas.bind('<Enter>', self._bound_to_mousewheel)
+        self.canvas.bind('<Leave>', self._unbound_to_mousewheel)
 
     def resize_frame(self, e):
         self.canvas.itemconfig(self._frame_id, width=e.width)
@@ -50,6 +56,21 @@ class Relation(Listener, Frame):
     def onFrameConfigure(self, event):
         '''Reset the scroll region to encompass the inner frame'''
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
+
+    def _bound_to_mousewheel(self, event):
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _unbound_to_mousewheel(self, event):
+        self.canvas.unbind_all("<MouseWheel>")
+
+    def _on_mousewheel(self, event):
+        speed = 1 / 6
+        units = event.delta / 120
+        fraction = self.vsb.get()[0] - units * speed
+
+        fraction = max(0, fraction)
+        self.canvas.yview_moveto(fraction)
+
 
     def set_data(self, data: list[Relationable], parent_obj:HasInternalRelations):
         for entry in data:

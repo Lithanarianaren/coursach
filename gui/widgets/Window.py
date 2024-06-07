@@ -50,7 +50,7 @@ class Window(Listener, WindowLayout):
                 datatype: type[Addable] = event.data['class']
                 form_result = Form(datatype.add_form_blueprint()).launch()
                 if form_result is not None:
-                    datatype.add(self.__obj, form_result)
+                    datatype.add(event.data['parent'], form_result)
                     self.update_tabs()
             return
         if event.name == 'edit_query':
@@ -58,24 +58,24 @@ class Window(Listener, WindowLayout):
                 item: Editable = event.data['item']
                 form_result = Form(item.edit_form_blueprint()).launch()
                 if form_result is not None:
-                    item.edit(form_result, self.__obj)
+                    item.edit(form_result, event.data['parent'])
                 self.update_tabs()
             return
         if event.name == 'delete_query':
             if isinstance(event.data['item'], Deletable):
                 item: Deletable = event.data['item']
-                item.delete(self.__obj)
+                item.delete(event.data['parent'])
                 self.update_tabs()
             return
         if event.name == 'pay_me':
             if isinstance(event.data['item'], Worker) and isinstance(self.__obj, Store):
                 item: Worker = event.data['item']
-                item.get_salary(self.__obj)
+                item.get_salary(event.data['parent'])
                 self.update_tabs()
             return
         if event.name == 'pay_all':
-            if isinstance(self.__obj, Store):
-                self.__obj.pay_all_workers()
+            if isinstance(event.data['parent'], Store):
+                event.data['parent'].pay_all_workers()
                 self.update_tabs()
             return
 

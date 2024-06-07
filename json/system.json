@@ -7,7 +7,7 @@
                 "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
                 "house": "1/65"
             },
-            "cash": 548430,
+            "cash": 334930,
             "workers": [
                 {
                     "id": 1,
@@ -116,6 +116,148 @@
                         }
                     ],
                     "cost": 81670
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
+                            "quantity": 1,
+                            "cost": 40000
+                        },
+                        {
+                            "name": "\u041a\u043b\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0430 Catwalk A113",
+                            "quantity": 1,
+                            "cost": 3000
+                        },
+                        {
+                            "name": "\u041c\u044b\u0448\u044c Crouch CND-SGM14",
+                            "quantity": 1,
+                            "cost": 1000
+                        },
+                        {
+                            "name": "\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438 Earcanola ERP-17",
+                            "quantity": 1,
+                            "cost": 850
+                        }
+                    ],
+                    "cost": 44850
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Periphery 260",
+                            "quantity": 1,
+                            "cost": 30000
+                        },
+                        {
+                            "name": "\u041a\u043b\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0430 Catwalk A113",
+                            "quantity": 1,
+                            "cost": 3000
+                        },
+                        {
+                            "name": "\u041c\u044b\u0448\u044c Crouch CND-SGM14",
+                            "quantity": 1,
+                            "cost": 1000
+                        },
+                        {
+                            "name": "\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438 Earcanola ERP-17",
+                            "quantity": 1,
+                            "cost": 850
+                        }
+                    ],
+                    "cost": 34850
+                },
+                {
+                    "inward": true,
+                    "desc": "AMD 3*40",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
+                            "quantity": 3,
+                            "cost": 40000
+                        }
+                    ],
+                    "cost": 120000
+                },
+                {
+                    "inward": true,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041c\u043e\u043d\u0438\u0442\u043e\u0440 Monika KDH-4 16''",
+                            "quantity": 1,
+                            "cost": 16000
+                        },
+                        {
+                            "name": "\u041a\u0430\u0431\u0435\u043b\u044c Ohmtech USB 1 m",
+                            "quantity": 10,
+                            "cost": 100
+                        },
+                        {
+                            "name": "\u041a\u0430\u0431\u0435\u043b\u044c Ohmtech USB 2 m",
+                            "quantity": 10,
+                            "cost": 200
+                        },
+                        {
+                            "name": "\u0412\u0435\u0431-\u043a\u0430\u043c\u0435\u0440\u0430 Spyder CN-6489",
+                            "quantity": 2,
+                            "cost": 1600
+                        },
+                        {
+                            "name": "\u041c\u0438\u043a\u0440\u043e\u0444\u043e\u043d Spyder IW-4",
+                            "quantity": 2,
+                            "cost": 800
+                        },
+                        {
+                            "name": "\u041c\u044b\u0448\u044c \u0431\u0435\u0441\u043f\u0440\u043e\u0432\u043e\u0434\u043d\u0430\u044f Hamster C4",
+                            "quantity": 3,
+                            "cost": 1200
+                        },
+                        {
+                            "name": "\u041f\u0440\u0438\u043d\u0442\u0435\u0440 Goldjet EXP240BK",
+                            "quantity": 1,
+                            "cost": 24000
+                        },
+                        {
+                            "name": "\u041a\u0430\u0440\u0442\u0440\u0438\u0434\u0436\u0438 Goldjet EXP240BK",
+                            "quantity": 5,
+                            "cost": 25000
+                        }
+                    ],
+                    "cost": 176400
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u0412\u0435\u0431-\u043a\u0430\u043c\u0435\u0440\u0430 Spyder CN-6489",
+                            "quantity": 1,
+                            "cost": 2000
+                        },
+                        {
+                            "name": "\u041c\u0438\u043a\u0440\u043e\u0444\u043e\u043d Spyder IW-4",
+                            "quantity": 1,
+                            "cost": 1200
+                        }
+                    ],
+                    "cost": 3200
+                },
+                {
+                    "inward": false,
+                    "desc": "",
+                    "completed": false,
+                    "items": [],
+                    "cost": 0
                 }
             ],
             "items": [
@@ -126,28 +268,73 @@
                 },
                 {
                     "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Periphery 260",
-                    "quantity": 3,
+                    "quantity": 2,
                     "cost": 24990
                 },
                 {
                     "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 AMD 1",
-                    "quantity": 4,
-                    "cost": 30000
+                    "quantity": 6,
+                    "cost": 35000
                 },
                 {
                     "name": "\u041a\u043b\u0430\u0432\u0438\u0430\u0442\u0443\u0440\u0430 Catwalk A113",
-                    "quantity": 10,
+                    "quantity": 8,
                     "cost": 2300
                 },
                 {
                     "name": "\u041c\u044b\u0448\u044c Crouch CND-SGM14",
-                    "quantity": 10,
+                    "quantity": 8,
                     "cost": 700
                 },
                 {
                     "name": "\u041d\u0430\u0443\u0448\u043d\u0438\u043a\u0438 Earcanola ERP-17",
-                    "quantity": 10,
+                    "quantity": 8,
                     "cost": 670
+                },
+                {
+                    "name": "\u041c\u043e\u043d\u0438\u0442\u043e\u0440 Monika KDH-4 16''",
+                    "quantity": 1,
+                    "cost": 16000
+                },
+                {
+                    "name": "\u041a\u0430\u0431\u0435\u043b\u044c Ohmtech USB 1 m",
+                    "quantity": 10,
+                    "cost": 100
+                },
+                {
+                    "name": "\u041a\u0430\u0431\u0435\u043b\u044c Ohmtech USB 2 m",
+                    "quantity": 10,
+                    "cost": 200
+                },
+                {
+                    "name": "\u0412\u0435\u0431-\u043a\u0430\u043c\u0435\u0440\u0430 Spyder CN-6489",
+                    "quantity": 1,
+                    "cost": 1600
+                },
+                {
+                    "name": "\u041c\u0438\u043a\u0440\u043e\u0444\u043e\u043d Spyder IW-4",
+                    "quantity": 1,
+                    "cost": 800
+                },
+                {
+                    "name": "\u041c\u044b\u0448\u044c \u0431\u0435\u0441\u043f\u0440\u043e\u0432\u043e\u0434\u043d\u0430\u044f Hamster C4",
+                    "quantity": 3,
+                    "cost": 1200
+                },
+                {
+                    "name": "\u041f\u0440\u0438\u043d\u0442\u0435\u0440 Goldjet EXP240BK",
+                    "quantity": 1,
+                    "cost": 24000
+                },
+                {
+                    "name": "\u041a\u0430\u0440\u0442\u0440\u0438\u0434\u0436\u0438 Goldjet EXP240BK",
+                    "quantity": 5,
+                    "cost": 25000
+                },
+                {
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                    "quantity": 8,
+                    "cost": 25000
                 }
             ],
             "movements": [
@@ -202,6 +389,24 @@
                             "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
                             "quantity": 6,
                             "cost": 100
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                        "house": "1"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f, 1 \u043e\u0442 7/6/2024 13:16",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 3,
+                            "cost": 0
                         }
                     ]
                 }
@@ -310,12 +515,48 @@
                     },
                     "inward": true,
                     "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u041f\u0435\u0440\u0432\u0430\u044f, 1/65 \u043e\u0442 6/6/2024 22:44",
-                    "completed": false,
+                    "completed": true,
                     "items": [
                         {
                             "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
                             "quantity": 6,
                             "cost": 100
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                        "house": "2"
+                    },
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 3,
+                            "cost": 12
+                        }
+                    ]
+                },
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
+                        "house": "1/65"
+                    },
+                    "inward": false,
+                    "desc": "",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 3,
+                            "cost": 0
                         }
                     ]
                 }
@@ -328,8 +569,33 @@
                 "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
                 "house": "2"
             },
-            "items": [],
-            "movements": []
+            "items": [
+                {
+                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                    "quantity": 3,
+                    "cost": 12
+                }
+            ],
+            "movements": [
+                {
+                    "uncle": {
+                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
+                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
+                        "street": "\u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f",
+                        "house": "1"
+                    },
+                    "inward": true,
+                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u0421\u043a\u043b\u0430\u0434\u0441\u043a\u0430\u044f, 1 \u043e\u0442 7/6/2024 10:37",
+                    "completed": true,
+                    "items": [
+                        {
+                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
+                            "quantity": 3,
+                            "cost": 12
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

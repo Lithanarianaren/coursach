@@ -43,6 +43,13 @@ def unsigned_int_constraint(value: str) -> tuple[Any, Optional[str]]:
     else:
         return constraint, message
 
+def positive_int_constraint(value: str) -> tuple[Any, Optional[str]]:
+    constraint, message = int_constraint(value)
+    if message is None and constraint <= 0:
+        return None, "Не может быть меньше 1"
+    else:
+        return constraint, message
+
 
 
 class ElementBlueprint:
