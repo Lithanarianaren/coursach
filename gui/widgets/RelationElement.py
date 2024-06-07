@@ -15,7 +15,7 @@ class RelationElement(Listener, Frame):
         pass
 
     def __init__(self, **kw):
-        super().__init__(**kw, height=40, padding='5', relief='solid', style='Element.TFrame')
+        super().__init__(**kw, height=45, padding='5', relief='solid', style='Element.TFrame')
         self.item = None
         self.offset = 0
         self.length = 0
@@ -35,7 +35,7 @@ class RelationElement(Listener, Frame):
                 issubclass(type_rel, Deletable) +
                 issubclass(type_rel, Transaction)
         )
-        return max(class_offset, item_offset)
+        return max(class_offset, item_offset)+10
 
     def wrap_labels(self):
         for i in self.labels:
