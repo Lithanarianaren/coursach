@@ -234,7 +234,7 @@ class MoveTransaction(BaseTransaction):
     def get_relation_object(self) -> list[str]:
         return [self.desc,
                 "Приход" if self.inward else "Отгрузка",
-                self.uncle.str_address(),
+                self.uncle.str_address() if self.uncle is not None else "--Склад удалён--",
                 "Проведено" if self.completed else "В работе"]
 
     @staticmethod

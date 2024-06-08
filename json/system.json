@@ -7,7 +7,7 @@
                 "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
                 "house": "1/65"
             },
-            "cash": 334930,
+            "cash": 274930,
             "workers": [
                 {
                     "id": 1,
@@ -16,6 +16,17 @@
                     "phone": "+79787978797",
                     "last_paid": [
                         6,
+                        6,
+                        2024
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "\u0413\u0430\u0435\u043d\u043a\u043e \u0418.",
+                    "salary": 60000,
+                    "phone": "+79785553535",
+                    "last_paid": [
+                        8,
                         6,
                         2024
                     ]
@@ -407,89 +418,6 @@
                             "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4095",
                             "quantity": 3,
                             "cost": 0
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "address": {
-                "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
-                "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
-                "street": "\u0412\u0442\u043e\u0440\u0430\u044f",
-                "house": "10\u0411"
-            },
-            "cash": 990000,
-            "workers": [
-                {
-                    "id": 1,
-                    "name": "\u0413\u0430\u0435\u043d\u043a\u043e \u0418.",
-                    "salary": 60000,
-                    "phone": "+79785553535",
-                    "last_paid": null
-                }
-            ],
-            "diary": [
-                {
-                    "inward": true,
-                    "desc": "",
-                    "completed": true,
-                    "items": [
-                        {
-                            "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
-                            "quantity": 100,
-                            "cost": 100
-                        }
-                    ],
-                    "cost": 10000
-                }
-            ],
-            "items": [
-                {
-                    "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
-                    "quantity": 2,
-                    "cost": 0
-                },
-                {
-                    "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
-                    "quantity": 70,
-                    "cost": 100
-                }
-            ],
-            "movements": [
-                {
-                    "uncle": {
-                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
-                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
-                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
-                        "house": "1/65"
-                    },
-                    "inward": true,
-                    "desc": "\u041f\u0440\u0438\u0432\u043e\u0437: \u0420\u043e\u0441\u0441\u0438\u044f, \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c, \u041f\u0435\u0440\u0432\u0430\u044f, 1/65 \u043e\u0442 6/6/2024 21:7",
-                    "completed": true,
-                    "items": [
-                        {
-                            "name": "\u041f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0440 Intel Core I^4 4096",
-                            "quantity": 2,
-                            "cost": 0
-                        }
-                    ]
-                },
-                {
-                    "uncle": {
-                        "country": "\u0420\u043e\u0441\u0441\u0438\u044f",
-                        "city": "\u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c",
-                        "street": "\u041f\u0435\u0440\u0432\u0430\u044f",
-                        "house": "1/65"
-                    },
-                    "inward": false,
-                    "desc": "",
-                    "completed": true,
-                    "items": [
-                        {
-                            "name": "\u0422\u043e\u0432\u0430\u0440 \"\u0442\u043e\u0432\u0430\u0440\"",
-                            "quantity": 30,
-                            "cost": 100
                         }
                     ]
                 }
